@@ -322,7 +322,8 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; backg
   </div>
   <div class="btn-row">
     <button class="btn" onclick="hideStartPackModal()" style="flex:1;">取消</button>
-    <button class="btn btn-primary" onclick="submitStartPack()" style="flex:1;">确认打包</button>
+    <button class="btn btn-primary" id="startPackAiBtn" onclick="triggerStartPackAi()" style="flex:1;" disabled>AI识别</button>
+    <button class="btn btn-primary" id="startPackConfirmBtn" onclick="submitStartPack()" style="flex:1;display:none;">确认打包</button>
   </div>
 </div></div>
 
@@ -1674,6 +1675,10 @@ function startOrderPack(id) {
   document.getElementById('startPackAiArea').style.display = 'none';
   document.getElementById('startPackAiScanning').style.display = 'none';
   document.getElementById('startPackAiList').innerHTML = '';
+  // 重置按钮状态：显示AI识别（禁用），隐藏确认打包
+  document.getElementById('startPackAiBtn').style.display = '';
+  document.getElementById('startPackAiBtn').disabled = true;
+  document.getElementById('startPackConfirmBtn').style.display = 'none';
   document.getElementById('startPackModal').classList.add('show');
 }
 function hideStartPackModal() { document.getElementById('startPackModal').classList.remove('show'); startPackId = null; }
@@ -1686,29 +1691,51 @@ function onStartPackFileChange(input) {
     var size = f.size<1024?'<1KB':f.size<1048576?(f.size/1024).toFixed(1)+'KB':(f.size/1048576).toFixed(1)+'MB';
     list.innerHTML += '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:var(--primary-light);border-radius:12px;font-size:11px;color:var(--primary);margin:2px;">'+f.name+' ('+size+')</span>';
   }
+  // 选了照片后启用AI识别按钮，收起之前的识别结果
   if (files.length > 0) {
-    document.getElementById('startPackAiArea').style.display = 'block';
-    document.getElementById('startPackAiScanning').style.display = 'block';
+    document.getElementById('startPackAiBtn').disabled = false;
+    document.getElementById('startPackAiBtn').textContent = '🤖 AI识别';
+    document.getElementById('startPackConfirmBtn').style.display = 'none';
+    document.getElementById('startPackAiArea').style.display = 'none';
+    document.getElementById('startPackAiScanning').style.display = 'none';
     document.getElementById('startPackAiList').innerHTML = '';
-    document.getElementById('startPackAiStatus').textContent = '分析中...';
     startPackAiItems = [];
-    var el = document.getElementById('startPackAiScanning');
-    setTimeout(function(){
-      el.innerHTML = '<span style="color:#10B981;">✅ 识别完成</span>';
-      document.getElementById('startPackAiStatus').textContent = '已识别 8 件';
-      startPackAiItems = [
-        { name:'棉质T恤', qty:2, cat:'普货' },
-        { name:'书籍杂志', qty:5, cat:'普货' },
-        { name:'陶瓷餐具', qty:1, cat:'普货' },
-        { name:'运动鞋', qty:3, cat:'普货' },
-        { name:'桌面摆件', qty:1, cat:'普货' },
-        { name:'数据线', qty:10, cat:'普货' },
-        { name:'充电宝', qty:2, cat:'敏货' },
-        { name:'香水', qty:1, cat:'敏货' }
-      ];
-      renderStartPackAiList();
-    }, 1500);
+  } else {
+    document.getElementById('startPackAiBtn').disabled = true;
   }
+}
+
+// 新增：触发AI识别（前置操作）
+function triggerStartPackAi() {
+  var files = document.getElementById('startPackFile').files;
+  if (files.length === 0) { alert('请先上传拆包图片'); return; }
+  // 进入识别状态
+  document.getElementById('startPackAiBtn').textContent = '🔍 识别中...';
+  document.getElementById('startPackAiBtn').disabled = true;
+  document.getElementById('startPackAiArea').style.display = 'block';
+  document.getElementById('startPackAiScanning').style.display = 'block';
+  document.getElementById('startPackAiList').innerHTML = '';
+  document.getElementById('startPackAiStatus').textContent = '分析中...';
+  startPackAiItems = [];
+  var el = document.getElementById('startPackAiScanning');
+  setTimeout(function(){
+    el.innerHTML = '<span style="color:#10B981;">✅ 识别完成</span>';
+    document.getElementById('startPackAiStatus').textContent = '已识别 8 件';
+    startPackAiItems = [
+      { name:'棉质T恤', qty:2, cat:'普货' },
+      { name:'书籍杂志', qty:5, cat:'普货' },
+      { name:'陶瓷餐具', qty:1, cat:'普货' },
+      { name:'运动鞋', qty:3, cat:'普货' },
+      { name:'桌面摆件', qty:1, cat:'普货' },
+      { name:'数据线', qty:10, cat:'普货' },
+      { name:'充电宝', qty:2, cat:'敏货' },
+      { name:'香水', qty:1, cat:'敏货' }
+    ];
+    renderStartPackAiList();
+    // 识别完成：隐藏AI识别按钮，显示确认打包
+    document.getElementById('startPackAiBtn').style.display = 'none';
+    document.getElementById('startPackConfirmBtn').style.display = '';
+  }, 1500);
 }
 function renderStartPackAiList() {
   var list = document.getElementById('startPackAiList');
