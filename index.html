@@ -1077,17 +1077,13 @@ function renderPackPool() {
       '<div class="stat-card"><div class="ico">'+statIco('ex','#9CA3AF')+'</div><div class="val" style="color:#9CA3AF;">'+voided+'</div><div class="lbl">已作废</div></div>';
   } else {
     var pendingPack = all.filter(function(o){ return o.status==='待打包'||o.status==='待分配'; }).length;
-    var pendingAudit = all.filter(function(o){ return o.status==='打包待审核'; }).length;
     var packing = all.filter(function(o){ return o.status==='打包中'; }).length;
-    var doneAudit = all.filter(function(o){ return o.status==='完成待审核'; }).length;
     var packed = all.filter(function(o){ return o.status==='打包完毕'; }).length;
     var verifying = all.filter(function(o){ return o.status==='审核'; }).length;
     var packEx = all.filter(function(o){ return o.status==='异常'; }).length;
     document.getElementById('statsRow').innerHTML =
       '<div class="stat-card"><div class="ico">'+statIco('pack','#EA580C')+'</div><div class="val" style="color:#EA580C;">'+pendingPack+'</div><div class="lbl">待打包</div></div>'+
-      '<div class="stat-card"><div class="ico">'+statIco('clock','#F59E0B')+'</div><div class="val" style="color:#F59E0B;">'+pendingAudit+'</div><div class="lbl">打包待审核</div></div>'+
       '<div class="stat-card"><div class="ico">'+statIco('clock','#2563EB')+'</div><div class="val" style="color:var(--primary);">'+packing+'</div><div class="lbl">打包中</div></div>'+
-      '<div class="stat-card"><div class="ico">'+statIco('check','#7C3AED')+'</div><div class="val" style="color:#7C3AED;">'+doneAudit+'</div><div class="lbl">完成待审核</div></div>'+
       '<div class="stat-card"><div class="ico">'+statIco('check','#16A34A')+'</div><div class="val" style="color:var(--success);">'+packed+'</div><div class="lbl">打包完毕</div></div>'+
       '<div class="stat-card"><div class="ico">'+statIco('dollar','#0891B2')+'</div><div class="val" style="color:#0891B2;">'+verifying+'</div><div class="lbl">驳回</div></div>'+
       '<div class="stat-card"><div class="ico">'+statIco('ex','#DC2626')+'</div><div class="val" style="color:#DC2626;">'+packEx+'</div><div class="lbl">异常</div></div>';
@@ -1110,9 +1106,7 @@ function renderPackPool() {
   } else {
     document.getElementById('filterScroll').innerHTML =
       '<span class="filter-chip'+(currentPackStage==='pendingPack'?' active':'')+'" onclick="switchPackStage(\'pendingPack\')">待打包</span>'+
-      '<span class="filter-chip'+(currentPackStage==='pendingAudit'?' active':'')+'" onclick="switchPackStage(\'pendingAudit\')">打包待审核</span>'+
       '<span class="filter-chip'+(currentPackStage==='packing'?' active':'')+'" onclick="switchPackStage(\'packing\')">打包中</span>'+
-      '<span class="filter-chip'+(currentPackStage==='doneAudit'?' active':'')+'" onclick="switchPackStage(\'doneAudit\')">完成待审核</span>'+
       '<span class="filter-chip'+(currentPackStage==='packed'?' active':'')+'" onclick="switchPackStage(\'packed\')">打包完毕</span>'+
       '<span class="filter-chip'+(currentPackStage==='verify'?' active':'')+'" onclick="switchPackStage(\'verify\')">驳回</span>'+
       '<span class="filter-chip'+(currentPackStage==='exception'?' active':'')+'" onclick="switchPackStage(\'exception\')">异常</span>'+
@@ -1438,26 +1432,54 @@ function showPackDetail(id) {
   }
   h += demand;
   // 物品属性（AI识别结果）
-  if (o.packItems && o.packItems.length) {
-    var general = o.packItems.filter(function(i){ return i.cat==='普货'; });
-    var sensitive = o.packItems.filter(function(i){ return i.cat==='敏货'; });
+  if (o.status === '打包中' || (o.packItems && o.packItems.length)) {
+    var general = (o.packItems||[]).filter(function(i){ return i.cat==='普货'; });
+    var sensitive = (o.packItems||[]).filter(function(i){ return i.cat==='敏货'; });
+    var hasItems = o.packItems && o.packItems.length;
     h += '<div style="background:var(--card);border-radius:10px;padding:12px 14px;margin-bottom:12px;border:1px solid var(--border);">';
     h += '<div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;font-weight:600;">📦 物品属性 · AI识别</div>';
-    h += '<div style="display:flex;gap:6px;margin-bottom:8px;">';
-    h += '<span style="font-size:10px;background:#ECFDF5;color:#10B981;padding:2px 8px;border-radius:8px;">普货 '+general.length+'件</span>';
-    h += '<span style="font-size:10px;background:#FEF2F2;color:#DC2626;padding:2px 8px;border-radius:8px;">敏货 '+sensitive.length+'件</span>';
-    h += '</div>';
-    // 列表头
-    h += '<div style="display:flex;gap:8px;padding:4px 0;font-size:10px;color:var(--text-secondary);border-bottom:1px solid var(--border);margin-bottom:4px;">';
-    h += '<span style="flex:2;">物品名称</span><span style="width:36px;text-align:center;">数量</span><span style="width:48px;text-align:center;">属性</span>';
-    h += '</div>';
-    o.packItems.forEach(function(item){
-      h += '<div style="display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border-light);">';
-      h += '<span style="flex:2;font-size:12px;color:var(--text);">'+item.name+'</span>';
-      h += '<span style="width:36px;text-align:center;font-size:11px;color:var(--text);font-weight:600;">'+item.qty+'</span>';
-      h += '<span style="width:48px;text-align:center;font-size:10px;font-weight:600;color:'+(item.cat==='敏货'?'#DC2626':'#10B981')+';">'+item.cat+'</span>';
+    if (hasItems) {
+      h += '<div style="display:flex;gap:6px;margin-bottom:8px;">';
+      h += '<span style="font-size:10px;background:#ECFDF5;color:#10B981;padding:2px 8px;border-radius:8px;">普货 '+general.length+'件</span>';
+      h += '<span style="font-size:10px;background:#FEF2F2;color:#DC2626;padding:2px 8px;border-radius:8px;">敏货 '+sensitive.length+'件</span>';
       h += '</div>';
-    });
+      // 列表头
+      h += '<div style="display:flex;gap:8px;padding:4px 0;font-size:10px;color:var(--text-secondary);border-bottom:1px solid var(--border);margin-bottom:4px;">';
+      h += '<span style="flex:2;">物品名称</span><span style="width:36px;text-align:center;">数量</span><span style="width:48px;text-align:center;">属性</span>';
+      h += '</div>';
+      o.packItems.forEach(function(item){
+        h += '<div style="display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border-light);">';
+        h += '<span style="flex:2;font-size:12px;color:var(--text);">'+item.name+'</span>';
+        h += '<span style="width:36px;text-align:center;font-size:11px;color:var(--text);font-weight:600;">'+(item.qty||1)+'</span>';
+        h += '<span style="width:48px;text-align:center;font-size:10px;font-weight:600;color:'+(item.cat==='敏货'?'#DC2626':'#10B981')+';">'+item.cat+'</span>';
+        h += '</div>';
+      });
+    } else {
+      // 生成10个演示数据
+      var demoItems = [
+        { name:'棉质T恤', qty:3, cat:'普货' }, { name:'运动鞋', qty:2, cat:'普货' },
+        { name:'陶瓷餐具套装', qty:1, cat:'普货' }, { name:'书籍杂志', qty:5, cat:'普货' },
+        { name:'桌面摆件', qty:2, cat:'普货' }, { name:'数据线', qty:8, cat:'普货' },
+        { name:'LED台灯', qty:1, cat:'普货' }, { name:'手机壳', qty:4, cat:'普货' },
+        { name:'充电宝×2', qty:2, cat:'敏货' }, { name:'香水×1瓶', qty:1, cat:'敏货' }
+      ];
+      general = demoItems.filter(function(i){ return i.cat==='普货'; });
+      sensitive = demoItems.filter(function(i){ return i.cat==='敏货'; });
+      h += '<div style="display:flex;gap:6px;margin-bottom:8px;">';
+      h += '<span style="font-size:10px;background:#ECFDF5;color:#10B981;padding:2px 8px;border-radius:8px;">普货 '+general.length+'件</span>';
+      h += '<span style="font-size:10px;background:#FEF2F2;color:#DC2626;padding:2px 8px;border-radius:8px;">敏货 '+sensitive.length+'件</span>';
+      h += '</div>';
+      h += '<div style="display:flex;gap:8px;padding:4px 0;font-size:10px;color:var(--text-secondary);border-bottom:1px solid var(--border);margin-bottom:4px;">';
+      h += '<span style="flex:2;">物品名称</span><span style="width:36px;text-align:center;">数量</span><span style="width:48px;text-align:center;">属性</span>';
+      h += '</div>';
+      demoItems.forEach(function(item){
+        h += '<div style="display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border-light);">';
+        h += '<span style="flex:2;font-size:12px;color:var(--text);">'+item.name+'</span>';
+        h += '<span style="width:36px;text-align:center;font-size:11px;color:var(--text);font-weight:600;">'+item.qty+'</span>';
+        h += '<span style="width:48px;text-align:center;font-size:10px;font-weight:600;color:'+(item.cat==='敏货'?'#DC2626':'#10B981')+';">'+item.cat+'</span>';
+        h += '</div>';
+      });
+    }
     h += '</div>';
   }
   h += '</div>';
