@@ -272,40 +272,66 @@ body { font-family:"Source Han Sans SC","Source Han Sans CN","Noto Sans SC","Not
   </div>
 </div></div>
 
-<!-- 打包完成弹窗 -->
+<!-- 打包完成弹窗（按箱装箱） -->
 <div class="modal-overlay" id="packDoneModal"><div class="modal" style="max-height:85vh;overflow-y:auto;">
   <h3>打包完成</h3>
   <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;" id="packDoneCode"></div>
   <div style="display:none;font-size:12px;color:#B45309;background:#FFFBEB;border:1px solid #FCD34D;border-radius:8px;padding:8px 12px;margin-bottom:8px;" id="packDoneMixTip"></div>
-  <!-- 媒体区（普通：上传包裹照片；混合仓：清源块+派力块）动态渲染 -->
-  <div id="packDoneMediaArea"></div>
+  <!-- 按箱装箱：箱数统计 + 新增箱号 + 箱列表 -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+    <span style="font-size:13px;font-weight:600;">打包箱数 <span id="packDoneBoxTotal" style="color:var(--text-secondary);font-weight:600;">共 0</span></span>
+    <button class="btn btn-primary btn-sm" onclick="openPackBoxModal(-1)" style="margin-left:auto;display:inline-flex;align-items:center;gap:4px;padding:6px 12px;font-size:12px;">+ 新增箱号</button>
+  </div>
+  <div id="packDoneBoxList" style="margin-bottom:12px;"></div>
   <label>完成说明 <span style="color:var(--danger)">*必填</span></label>
   <div style="position:relative;margin-bottom:12px;">
-    <textarea id="packDoneReason" placeholder="请输入打包完成说明..." style="width:100%;height:80px;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none;resize:vertical;"></textarea>
+    <textarea id="packDoneReason" placeholder="请输入打包完成说明，如：外箱已加固，封箱完整，标签清晰。" style="width:100%;height:80px;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;outline:none;resize:vertical;"></textarea>
     <button class="btn" onclick="startVoicePackDone()" style="position:absolute;right:6px;bottom:6px;padding:6px 8px;font-size:12px;border-radius:6px;background:var(--card);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
   </div>
-  <!-- AI识别区域 -->
-  <div id="packAiArea" style="display:none;">
-    <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-      <span style="font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><rect x="4" y="8" width="16" height="11" rx="2"/><circle cx="9" cy="13" r="1.2"/><circle cx="15" cy="13" r="1.2"/><path d="M12 4v4"/><circle cx="12" cy="3" r="1"/></svg>AI识别物品清单</span>
-      <span style="font-size:10px;color:var(--text-secondary);" id="packAiStatus"></span>
-    </div>
-    <div id="packAiScanning" style="display:none;padding:8px 0;text-align:center;font-size:11px;color:var(--primary);">
-      <span style="display:inline-flex;align-items:center;gap:4px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>AI正在分析包裹照片...</span>
-      <div style="width:80px;height:2px;background:#E5E7EB;border-radius:1px;margin:4px auto;overflow:hidden;"><div style="width:50%;height:100%;background:var(--primary);border-radius:1px;animation:packScan 1s ease-in-out infinite;"></div></div>
-    </div>
-    <div id="packAiList" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;"></div>
-    <div style="display:flex;gap:4px;margin-bottom:12px;">
-      <input type="text" id="packAiAddName" placeholder="物品名称" style="flex:1;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;outline:none;">
-      <select id="packAiAddCat" style="width:72px;padding:6px 4px;border:1px solid var(--border);border-radius:6px;font-size:12px;outline:none;"><option value="普货">普货</option><option value="敏货">敏货</option></select>
-      <button class="btn btn-sm" onclick="addPackAiItem()" style="padding:6px 10px;font-size:12px;">+</button>
-    </div>
-  </div>
-  <style>@keyframes packScan{0%{margin-left:-10%;}100%{margin-left:100%;}}</style>
   <div class="btn-row">
     <button class="btn" onclick="hidePackDoneModal()" style="flex:1;">取消</button>
     <button class="btn btn-success" onclick="submitPackDone()" style="flex:1;">确认完成</button>
   </div>
+</div></div>
+
+<!-- 选择装箱物品（二级弹框：箱号 + 所属仓库 + 装箱/封箱图片 + 勾选物品） -->
+<div class="modal-overlay" id="packBoxItemModal"><div class="modal" style="max-height:86vh;overflow-y:auto;">
+  <h3>选择装箱物品</h3>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+    <span style="font-size:12px;color:var(--text-secondary);white-space:nowrap;">箱号</span>
+    <input type="text" id="packBoxNo" placeholder="请输入箱号" style="flex:1;min-width:0;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-weight:600;outline:none;">
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
+    <span style="font-size:12px;color:var(--text-secondary);white-space:nowrap;flex-shrink:0;">所属仓库</span>
+    <label style="display:inline-flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;color:var(--text);white-space:nowrap;flex-shrink:0;"><input type="radio" name="packBoxWh" value="青源仓" checked onchange="setPackBoxWarehouse(this.value)" style="cursor:pointer;margin:0;flex-shrink:0;">青源仓</label>
+    <label style="display:inline-flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;color:var(--text);white-space:nowrap;flex-shrink:0;"><input type="radio" name="packBoxWh" value="派力仓" onchange="setPackBoxWarehouse(this.value)" style="cursor:pointer;margin:0;flex-shrink:0;">派力仓</label>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+    <div>
+      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px;">装箱图片 <span style="color:var(--danger);">*</span></div>
+      <label for="packBoxFile_pack" style="display:flex;align-items:center;justify-content:center;gap:6px;border:1px dashed var(--border);border-radius:8px;padding:16px 10px;cursor:pointer;color:var(--text-secondary);font-size:12px;background:var(--card);">+ 上传图片</label>
+      <input type="file" id="packBoxFile_pack" accept="image/*" multiple style="display:none;" onchange="onPackBoxFileChange('pack', event)">
+      <div id="packBoxPrev_pack" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"></div>
+    </div>
+    <div>
+      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px;">封箱图片 <span style="color:var(--danger);">*</span></div>
+      <label for="packBoxFile_seal" style="display:flex;align-items:center;justify-content:center;gap:6px;border:1px dashed var(--border);border-radius:8px;padding:16px 10px;cursor:pointer;color:var(--text-secondary);font-size:12px;background:var(--card);">+ 上传图片</label>
+      <input type="file" id="packBoxFile_seal" accept="image/*" multiple style="display:none;" onchange="onPackBoxFileChange('seal', event)">
+      <div id="packBoxPrev_seal" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"></div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+    <span style="font-size:13px;font-weight:600;">选择物品装箱</span>
+    <span id="packBoxItemStat" style="margin-left:auto;font-size:11px;color:var(--text-secondary);"></span>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:10px;">
+    <div style="flex:1;min-width:0;position:relative;">
+      <input type="text" id="packBoxSearch" placeholder="单号 / 物品名称" oninput="renderPackBoxPool()" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;outline:none;">
+    </div>
+    <button onclick="openWaybillScanTo('packBoxSearch', 'renderPackBoxPool')" title="扫描包裹面单" style="flex-shrink:0;width:36px;height:36px;border-radius:6px;border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--primary);cursor:pointer;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="3" y1="12" x2="21" y2="12"/></svg></button>
+  </div>
+  <div id="packBoxPool" style="max-height:300px;overflow-y:auto;margin-bottom:12px;"></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end;"><button class="btn" onclick="closePackBoxModal()">取消</button><button class="btn btn-primary" onclick="confirmPackBox()">确认装箱</button></div>
 </div></div>
 
 <!-- 打包异常弹框 -->
@@ -336,12 +362,45 @@ body { font-family:"Source Han Sans SC","Source Han Sans CN","Noto Sans SC","Not
   <div id="startPackAddGoodsImgs" style="display:none;margin-bottom:10px;"></div>
   <!-- XY号Tab栏（拼团时显示） -->
   <div id="startPackXyTabs" style="display:none;margin-bottom:10px;"></div>
+  <!-- 包裹编号筛选 + 扫描 -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+    <div style="flex:1;min-width:0;position:relative;">
+      <input type="text" id="startPackSearch" placeholder="输入包裹编号筛选" oninput="renderStartPackContent()" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none;background:var(--card);">
+    </div>
+    <button onclick="openWaybillScan()" title="扫描包裹面单" style="flex-shrink:0;width:38px;height:38px;border-radius:8px;border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--primary);cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="3" y1="12" x2="21" y2="12"/></svg></button>
+  </div>
+  <!-- 包裹数统计条 -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+    <span style="font-size:13px;font-weight:600;">包裹数 <span id="startPackParcelTotal" style="color:var(--text-secondary);font-weight:600;">共 0</span></span>
+    <span id="startPackParcelStat" style="margin-left:auto;font-size:11px;color:var(--text-secondary);"></span>
+  </div>
   <!-- 动态内容区 -->
   <div id="startPackContent"></div>
   <div class="btn-row">
     <button class="btn" onclick="hideStartPackModal()" style="flex:1;">取消</button>
     <button class="btn" onclick="saveStartPackDraft()" style="flex:1;">保存</button>
-    <button class="btn btn-primary" id="startPackAiBtn" onclick="triggerStartPackAi()" style="flex:1;" disabled>下一步</button>
+    <button class="btn btn-primary" id="startPackAiBtn" onclick="triggerStartPackAi()" style="flex:1;" disabled>AI识别</button>
+  </div>
+</div></div>
+
+<!-- 扫描包裹面单弹框 -->
+<div class="modal-overlay" id="waybillScanModal"><div class="modal" style="max-height:86vh;overflow-y:auto;">
+  <h3>扫描包裹面单</h3>
+  <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;">将包裹面单对准取景框，自动识别单号</div>
+  <div id="waybillScanArea" style="text-align:center;">
+    <div style="position:relative;width:220px;height:140px;margin:0 auto 12px;background:#0F172A;border-radius:10px;overflow:hidden;">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#64748B;">+</div>
+      <div style="position:absolute;left:16px;right:16px;top:50%;height:2px;background:#22D3EE;box-shadow:0 0 8px #22D3EE;" id="waybillScanLine"></div>
+      <div style="position:absolute;top:12px;left:12px;width:20px;height:20px;border-top:2px solid #22D3EE;border-left:2px solid #22D3EE;"></div>
+      <div style="position:absolute;top:12px;right:12px;width:20px;height:20px;border-top:2px solid #22D3EE;border-right:2px solid #22D3EE;"></div>
+      <div style="position:absolute;bottom:12px;left:12px;width:20px;height:20px;border-bottom:2px solid #22D3EE;border-left:2px solid #22D3EE;"></div>
+      <div style="position:absolute;bottom:12px;right:12px;width:20px;height:20px;border-bottom:2px solid #22D3EE;border-right:2px solid #22D3EE;"></div>
+    </div>
+    <div id="waybillScanHint" style="font-size:12px;color:var(--text-secondary);">正在扫描…</div>
+    <style>@keyframes waybillScanMove{0%{top:20%;}50%{top:80%;}100%{top:20%;}}</style>
+  </div>
+  <div class="btn-row" style="margin-top:12px;">
+    <button class="btn" onclick="closeWaybillScan()" style="flex:1;">取消</button>
   </div>
 </div></div>
 
@@ -570,7 +629,7 @@ function seedData() {
     '审核','审核','已作废',
     '异常','异常'];
   var packers = ['','','','','','','','','','','','','','','','','','','','','赵六','赵六','赵六','赵六','赵六','赵六','赵六','赵六','赵六','赵六','赵六','赵六','赵六','赵六','','','','',''];  // 更新数组长度
-  var typeOpts = ['常规','分单','门店','超大件','清源仓','派力仓','加货','变更','混合仓','混合仓','混合仓','混合仓'];
+  var typeOpts = ['常规','分单','门店','超大件','青源仓','派力仓','加货','变更','混合仓','混合仓','混合仓','混合仓'];
   var pickers = ['','','','','','小萌','小萌','小萌','小萌','小萌','小萌','小萌','','','','','','','','','','','','','','','','','','','','','','','','','',''];
 
   for (var i=0; i<statuses.length; i++) {
@@ -1097,7 +1156,9 @@ function uiIco(name, color, size) {
     'user': '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
     'sun': '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>',
     'calendar': '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
-    'trending': '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>'
+    'trending': '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
+    'scan': '<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="3" y1="12" x2="21" y2="12"/>',
+    'barcode': '<path d="M3 5v14"/><path d="M7 5v14"/><path d="M11 5v14"/><path d="M15 5v14"/><path d="M18 5v14"/><path d="M21 5v14"/>'
   };
   return s + (p[name]||p['box']) + '</svg>';
 }
@@ -1270,7 +1331,7 @@ function openPickModal(preId) {
     var _xc = o.xcQty || 0;
     var _qs = Math.max(0, _qy - _xc);
     _pmt.style.display = 'flex';
-    _pmt.innerHTML = uiIco('warning','#DC2626',16)+'当前订单为混合仓，有'+_qs+'个包裹在清源仓，有'+_xc+'个包裹在派力仓！';
+    _pmt.innerHTML = uiIco('warning','#DC2626',16)+'当前订单为混合仓，有'+_qs+'个包裹在青源仓，有'+_xc+'个包裹在派力仓！';
   } else { _pmt.style.display = 'none'; _pmt.innerHTML = ''; }
   document.getElementById('pickPhotoInput').value = '';
   document.getElementById('pickPhotoList').innerHTML = '';
@@ -1633,7 +1694,7 @@ function showPackStartModal(id) {
   var _so = orderPackages.find(function(p){return p.id===id;});
   document.getElementById('packStartCode').textContent='海鸥订单号：'+(_so?_so.xy:'');
   var _smt = document.getElementById('startPackMixTip');
-  if (_so && _so.type==='混合仓') { _smt.style.display='block'; _smt.textContent='当前订单为混合仓，打包员注意检查清源仓和派力仓包裹'; }
+  if (_so && _so.type==='混合仓') { _smt.style.display='block'; _smt.textContent='当前订单为混合仓，打包员注意检查青源仓和派力仓包裹'; }
   else _smt.style.display='none';
   document.getElementById('packStartModal').classList.add('show');
 }
@@ -1647,6 +1708,28 @@ function submitPackStart() {
 }
 
 var packAiItems = [];
+var packDoneBoxes = [];        // 完成打包：箱号列表 [{no,warehouse,picks,itemList,packFiles,packUrls,packNames,sealFiles,sealUrls,sealNames}]
+var packBoxPool = [];          // 可选物品池 [{image,express,items:[{name,cat,qty}]}]
+var packBoxPicked = {};        // 当前编辑箱的勾选状态 { 'gi:ii': true }
+var packBoxCollapsed = {};     // 分组折叠状态
+var packBoxEditing = -1;       // -1=新增；>=0=编辑已有箱
+var packBoxTmp = { pack:{files:[],urls:[],names:[]}, seal:{files:[],urls:[],names:[]} };
+var PACK_BOX_WAREHOUSES = ['青源仓','派力仓'];
+
+function h5PackBoxNoOf(o, n) {
+  var base = (o && (o.xy || o.code)) ? (o.xy || o.code) : 'XY';
+  return base + '-' + n;
+}
+function cloneH5PackBox(b) {
+  if (!b) return null;
+  return {
+    no: b.no || '', warehouse: b.warehouse || PACK_BOX_WAREHOUSES[0],
+    picks: Object.assign({}, b.picks || {}),
+    itemList: (b.itemList || []).map(function(x){ return { express:x.express, name:x.name, cat:x.cat, qty:x.qty }; }),
+    packFiles:(b.packFiles||[]).slice(), packUrls:(b.packUrls||[]).slice(), packNames:(b.packNames||[]).slice(),
+    sealFiles:(b.sealFiles||[]).slice(), sealUrls:(b.sealUrls||[]).slice(), sealNames:(b.sealNames||[]).slice()
+  };
+}
 
 function showPackDoneModal(id) {
   packDoneId = id;
@@ -1655,53 +1738,231 @@ function showPackDoneModal(id) {
   var _isMix = _do && _do.type==='混合仓';
   document.getElementById('packDoneCode').textContent='海鸥订单号：'+(_do?_do.xy:'');
   var _dmt = document.getElementById('packDoneMixTip');
-  if (_isMix) { _dmt.style.display='block'; _dmt.textContent='当前订单为混合仓，打包员注意检查清源仓和派力仓包裹'; }
+  if (_isMix) { _dmt.style.display='block'; _dmt.textContent='当前订单为混合仓，打包员注意检查青源仓和派力仓包裹'; }
   else _dmt.style.display='none';
-  renderPackDoneMedia(_isMix);
-  document.getElementById('packDoneReason').value = '';
-  document.getElementById('packAiArea').style.display = 'none';
-  document.getElementById('packAiScanning').style.display = 'none';
-  document.getElementById('packAiList').innerHTML = '';
-  document.getElementById('packAiAddName').value = '';
+  document.getElementById('packDoneReason').value = (_do && _do.packCompleteReason) ? _do.packCompleteReason : '';
+  // 回填已有箱数据（重新打开时）
+  packDoneBoxes = ((_do && _do.packDoneBoxes) ? _do.packDoneBoxes : []).map(cloneH5PackBox);
+  renderPackDoneBoxList();
   document.getElementById('packDoneModal').classList.add('show');
 }
-function renderPackDoneMedia(isMix) {
-  var el = document.getElementById('packDoneMediaArea');
-  var h = '';
-  if (isMix) {
-    h += '<div style="background:#ECFDF5;border:1px solid #A7F3D0;border-radius:10px;padding:10px 12px;margin-bottom:10px;">';
-    h += '<div style="font-size:12px;font-weight:600;color:#059669;margin-bottom:8px;">清源仓</div>';
-    h += '<label style="font-size:12px;color:var(--text);">清源仓打包箱数 <span style="color:var(--danger)">*必填</span></label>';
-    h += '<input type="number" id="packDoneQyBox" placeholder="请输入清源仓打包箱数" min="1" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none;margin-bottom:8px;">';
-    h += '<label style="font-size:12px;color:var(--text);">清源仓打包图片 <span style="color:var(--danger)">*必传</span></label>';
-    h += '<input type="file" id="packDoneFile" multiple accept="image/*" onchange="onPackDoneFileChange(this)" style="margin-bottom:4px;display:block;width:100%;">';
-    h += '<div id="packDoneFileList" style="margin-bottom:0;"></div>';
-    h += '</div>';
-    h += '<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:10px 12px;margin-bottom:10px;">';
-    h += '<div style="font-size:12px;font-weight:600;color:#EA580C;margin-bottom:8px;">派力仓</div>';
-    h += '<label style="font-size:12px;color:var(--text);">派力仓打包箱数 <span style="color:var(--danger)">*必填</span></label>';
-    h += '<input type="number" id="packDonePlBox" placeholder="请输入派力仓打包箱数" min="1" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none;margin-bottom:8px;">';
-    h += '<label style="font-size:12px;color:var(--text);">派力仓打包图片 <span style="color:var(--danger)">*必传</span></label>';
-    h += '<input type="file" id="packDoneXcFile" multiple accept="image/*" onchange="onPackDoneXcFileChange(this)" style="margin-bottom:4px;display:block;width:100%;">';
-    h += '<div id="packDoneXcFileList" style="margin-bottom:0;"></div>';
-    h += '</div>';
-  } else {
-    h += '<label style="font-size:12px;color:var(--text);">上传包裹照片 <span style="color:var(--danger)">*必传</span></label>';
-    h += '<input type="file" id="packDoneFile" multiple accept="image/*" onchange="onPackDoneFileChange(this)" style="margin-bottom:4px;display:block;width:100%;">';
-    h += '<div id="packDoneFileList" style="margin-bottom:8px;"></div>';
-  }
-  el.innerHTML = h;
-}
 function hidePackDoneModal() { document.getElementById('packDoneModal').classList.remove('show'); packDoneId=null; }
-function onPackDoneXcFileChange(input) {
-  var files = input.files;
-  var list = document.getElementById('packDoneXcFileList');
-  list.innerHTML = '';
-  for (var i=0; i<files.length; i++) {
-    var f = files[i];
-    list.innerHTML += '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:#FFF7ED;border-radius:12px;font-size:11px;color:#EA580C;margin:2px;">'+f.name+'</span>';
+
+// 按箱装箱：箱号列表
+function renderPackDoneBoxList() {
+  var wrap = document.getElementById('packDoneBoxList');
+  if (!wrap) return;
+  var tot = document.getElementById('packDoneBoxTotal');
+  if (tot) tot.textContent = '共 ' + packDoneBoxes.length;
+  if (!packDoneBoxes.length) {
+    wrap.innerHTML = '<div style="padding:18px 12px;text-align:center;color:var(--text-secondary);font-size:12px;border:1px dashed var(--border);border-radius:8px;">暂无装箱记录，请点击右侧「新增箱号」开始装箱</div>';
+    return;
   }
+  var head = '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#F8FAFC;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-secondary);font-weight:600;"><span style="flex:1.4;min-width:0;">箱号</span><span style="flex:0.9;text-align:center;">物品</span><span style="flex:1;text-align:right;">操作</span></div>';
+  var rows = packDoneBoxes.map(function(b, i){
+    return '<div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid #F3F4F6;font-size:12px;">' +
+      '<span style="flex:1.4;min-width:0;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + b.no + '</span>' +
+      '<span style="flex:0.9;text-align:center;color:var(--text);">' + b.itemList.length + '</span>' +
+      '<span style="flex:1;display:flex;gap:6px;justify-content:flex-end;">' +
+        '<button class="btn btn-sm" onclick="openPackBoxModal(' + i + ')" style="font-size:11px;padding:3px 10px;background:#ECFDF5;color:#15803D;border:1px solid #BBF7D0;">编辑</button>' +
+        '<button class="btn btn-sm" onclick="removePackDoneBox(' + i + ')" style="font-size:11px;padding:3px 10px;background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;">删除</button>' +
+      '</span></div>';
+  }).join('');
+  wrap.innerHTML = head + rows;
 }
+function removePackDoneBox(i) {
+  if (i < 0 || i >= packDoneBoxes.length) return;
+  packDoneBoxes.splice(i, 1);
+  renderPackDoneBoxList();
+}
+
+// ---- 选择装箱物品（二级弹框） ----
+function buildPackBoxPool(o) {
+  var out = [], seen = {};
+  var items = (o && o.packItems) || [];
+  if (!items.length) {
+    items = [
+      { name:'棉质T恤', qty:2, cat:'普货', photo:'IMG_001.jpg' },
+      { name:'运动短裤', qty:1, cat:'普货', photo:'IMG_001.jpg' },
+      { name:'充电宝', qty:1, cat:'敏货', photo:'IMG_001.jpg' },
+      { name:'陶瓷餐具', qty:1, cat:'普货', photo:'IMG_002.jpg' },
+      { name:'运动鞋', qty:2, cat:'普货', photo:'IMG_002.jpg' }
+    ];
+  }
+  items.forEach(function(it){
+    var g = it.photo || it.image || '未分组';
+    if (!seen[g]) { seen[g] = { image: g, express: h5ImgGroupName(g), items: [] }; out.push(seen[g]); }
+    seen[g].items.push({ name: it.name || '未识别物品', cat: it.cat || '普货', qty: it.qty || 1 });
+  });
+  return out;
+}
+function openPackBoxModal(idx) {
+  var o = orderPackages.find(function(p){ return p.id===packDoneId; });
+  if (!o) return;
+  packBoxEditing = (typeof idx === 'number') ? idx : -1;
+  packBoxPool = buildPackBoxPool(o);
+  packBoxCollapsed = {};
+  packBoxTmp = { pack:{files:[],urls:[],names:[]}, seal:{files:[],urls:[],names:[]} };
+  var b = (packBoxEditing >= 0) ? packDoneBoxes[packBoxEditing] : null;
+  if (b) {
+    packBoxPicked = Object.assign({}, b.picks || {});
+    packBoxTmp.pack.files = (b.packFiles||[]).slice();
+    packBoxTmp.pack.urls = (b.packUrls||[]).slice();
+    packBoxTmp.pack.names = (b.packNames||[]).slice();
+    packBoxTmp.seal.files = (b.sealFiles||[]).slice();
+    packBoxTmp.seal.urls = (b.sealUrls||[]).slice();
+    packBoxTmp.seal.names = (b.sealNames||[]).slice();
+    document.getElementById('packBoxNo').value = b.no || h5PackBoxNoOf(o, packBoxEditing + 1);
+    setPackBoxWarehouse(b.warehouse || PACK_BOX_WAREHOUSES[0]);
+  } else {
+    packBoxPicked = {};
+    document.getElementById('packBoxNo').value = h5PackBoxNoOf(o, packDoneBoxes.length + 1);
+    setPackBoxWarehouse(PACK_BOX_WAREHOUSES[0]);
+  }
+  var s = document.getElementById('packBoxSearch'); if (s) s.value = '';
+  renderPackBoxPhotoArea();
+  renderPackBoxPool();
+  document.getElementById('packBoxItemModal').classList.add('show');
+}
+function closePackBoxModal() {
+  var m = document.getElementById('packBoxItemModal');
+  if (m) m.classList.remove('show');
+}
+function setPackBoxWarehouse(v) {
+  var els = document.querySelectorAll('input[name="packBoxWh"]');
+  for (var i = 0; i < els.length; i++) els[i].checked = (els[i].value === v);
+}
+function getPackBoxWarehouse() {
+  var els = document.querySelectorAll('input[name="packBoxWh"]');
+  for (var i = 0; i < els.length; i++) { if (els[i].checked) return els[i].value; }
+  return PACK_BOX_WAREHOUSES[0];
+}
+function renderPackBoxPhotoArea() {
+  ['pack', 'seal'].forEach(function(kind){
+    var wrap = document.getElementById('packBoxPrev_' + kind);
+    if (!wrap) return;
+    var t = packBoxTmp[kind];
+    if (!t.urls.length && !t.names.length) { wrap.innerHTML = ''; return; }
+    var html = '';
+    t.urls.forEach(function(u, i){
+      html += '<span style="position:relative;display:inline-flex;">' +
+        (u ? '<img src="' + u + '" style="width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border);display:block;">'
+           : '<span style="width:52px;height:52px;border-radius:6px;border:1px solid var(--border);background:#F1F5F9;display:block;"></span>') +
+        '<span onclick="removePackBoxPhoto(\'' + kind + '\',' + i + ')" title="删除" style="position:absolute;right:-5px;top:-5px;width:15px;height:15px;border-radius:50%;background:var(--danger);color:#fff;font-size:11px;line-height:15px;text-align:center;cursor:pointer;">×</span></span>';
+    });
+    var off = t.urls.length;
+    t.names.forEach(function(n, i){
+      html += '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;background:#F3F4F6;border:1px solid #F3F4F6;border-radius:12px;font-size:11px;color:#374151;max-width:150px;">' +
+        '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + n + '</span>' +
+        '<span onclick="removePackBoxPhoto(\'' + kind + '\',' + (off + i) + ')" style="cursor:pointer;color:var(--text-secondary);font-weight:700;line-height:1;" title="删除">×</span></span>';
+    });
+    wrap.innerHTML = html;
+  });
+}
+function onPackBoxFileChange(kind, e) {
+  var t = packBoxTmp[kind];
+  if (!t || !e || !e.target || !e.target.files) return;
+  for (var k = 0; k < e.target.files.length; k++) {
+    var f = e.target.files[k];
+    t.files.push(f);
+    try { t.urls.push(URL.createObjectURL(f)); } catch (err) { t.urls.push(''); }
+  }
+  e.target.value = '';
+  renderPackBoxPhotoArea();
+}
+function removePackBoxPhoto(kind, i) {
+  var t = packBoxTmp[kind];
+  if (!t) return;
+  if (i < t.urls.length) { t.files.splice(i, 1); t.urls.splice(i, 1); }
+  else { t.names.splice(i - t.urls.length, 1); }
+  renderPackBoxPhotoArea();
+}
+function togglePackBoxGroup(gi) {
+  packBoxCollapsed[gi] = !packBoxCollapsed[gi];
+  renderPackBoxPool();
+}
+function togglePackBoxItem(gi, ii, checked) {
+  var key = gi + ':' + ii;
+  if (checked) packBoxPicked[key] = true; else delete packBoxPicked[key];
+  updatePackBoxStat();
+}
+function updatePackBoxStat() {
+  var el = document.getElementById('packBoxItemStat');
+  if (!el) return;
+  var items = 0, picked = 0;
+  packBoxPool.forEach(function(g){ items += g.items.length; });
+  Object.keys(packBoxPicked).forEach(function(k){ if (packBoxPicked[k]) picked++; });
+  el.textContent = packBoxPool.length + ' 个包裹 · ' + items + ' 项' + (picked ? (' · 已选 ' + picked + ' 项') : '');
+}
+function renderPackBoxPool() {
+  var wrap = document.getElementById('packBoxPool');
+  if (!wrap) return;
+  var kwEl = document.getElementById('packBoxSearch');
+  var kw = ((kwEl && kwEl.value) ? kwEl.value : '').trim().toLowerCase();
+  updatePackBoxStat();
+  var html = '';
+  packBoxPool.forEach(function(g, gi){
+    var rows = g.items.map(function(it, ii){ return { it: it, ii: ii }; });
+    if (kw) rows = rows.filter(function(r){ return (g.express + '|' + r.it.name).toLowerCase().indexOf(kw) >= 0; });
+    if (!rows.length) return;
+    var open = !packBoxCollapsed[gi];
+    var body = rows.map(function(r){
+      var on = !!packBoxPicked[gi + ':' + r.ii];
+      return '<div style="display:flex;align-items:center;gap:6px;padding:6px 10px;border-bottom:1px solid #F3F4F6;font-size:12px;">' +
+        '<input type="checkbox" ' + (on ? 'checked' : '') + ' onchange="togglePackBoxItem(' + gi + ',' + r.ii + ',this.checked)" style="cursor:pointer;margin:0;width:14px;height:14px;flex-shrink:0;">' +
+        '<span style="flex:1;min-width:0;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + r.it.name + '</span>' +
+        '<span style="flex-shrink:0;color:' + (r.it.cat==='敏货'?'#DC2626':'var(--text-secondary)') + ';font-size:11px;">' + r.it.cat + '</span>' +
+        '<span style="flex-shrink:0;text-align:center;color:var(--text-secondary);width:30px;">' + r.it.qty + '</span>' +
+      '</div>';
+    }).join('');
+    html += '<div style="border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden;background:var(--card);">' +
+      '<div onclick="togglePackBoxGroup(' + gi + ')" style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:#F8FAFC;cursor:pointer;">' +
+        '<span style="font-size:12px;font-weight:600;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + g.express + '</span>' +
+        '<span style="margin-left:auto;font-size:11px;color:var(--text-secondary);flex-shrink:0;">' + rows.length + ' 项</span>' +
+        '<span style="display:inline-flex;color:var(--text-secondary);transform:rotate(' + (open ? 180 : 0) + 'deg);transition:transform .2s;">▾</span>' +
+      '</div>' +
+      '<div style="display:' + (open ? '' : 'none') + ';">' +
+        '<div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:#FCFDFE;border-bottom:1px solid #F3F4F6;font-size:10px;color:var(--text-secondary);">' +
+          '<span style="width:14px;flex-shrink:0;"></span><span style="flex:1;">物品名称</span><span style="flex-shrink:0;width:50px;text-align:center;">属性</span><span style="flex-shrink:0;width:30px;text-align:center;">数量</span>' +
+        '</div>' + body +
+      '</div></div>';
+  });
+  wrap.innerHTML = html || '<div style="text-align:center;color:var(--text-secondary);font-size:12px;padding:24px;">没有匹配的物品</div>';
+}
+// 确认装箱：校验箱号 / 图片 / 物品，写回箱列表
+function confirmPackBox() {
+  var o = orderPackages.find(function(p){ return p.id===packDoneId; });
+  if (!o) return;
+  var noEl = document.getElementById('packBoxNo');
+  var no = ((noEl && noEl.value) ? noEl.value : '').trim();
+  if (!no) { alert('请输入箱号'); return; }
+  var dup = false;
+  packDoneBoxes.forEach(function(b, i){ if (b.no === no && i !== packBoxEditing) dup = true; });
+  if (dup) { alert('箱号 ' + no + ' 已存在，请更换箱号'); return; }
+  if (!packBoxTmp.pack.urls.length && !packBoxTmp.pack.names.length) { alert('请上传装箱图片'); return; }
+  if (!packBoxTmp.seal.urls.length && !packBoxTmp.seal.names.length) { alert('请上传封箱图片'); return; }
+  var itemList = [];
+  packBoxPool.forEach(function(g, gi){
+    g.items.forEach(function(it, ii){
+      if (packBoxPicked[gi + ':' + ii]) itemList.push({ express: g.express, name: it.name, cat: it.cat, qty: it.qty });
+    });
+  });
+  if (!itemList.length) { alert('请至少勾选一个物品'); return; }
+  var rec = {
+    no: no,
+    warehouse: getPackBoxWarehouse(),
+    picks: Object.assign({}, packBoxPicked),
+    itemList: itemList,
+    packFiles: packBoxTmp.pack.files.slice(), packUrls: packBoxTmp.pack.urls.slice(), packNames: packBoxTmp.pack.names.slice(),
+    sealFiles: packBoxTmp.seal.files.slice(), sealUrls: packBoxTmp.seal.urls.slice(), sealNames: packBoxTmp.seal.names.slice()
+  };
+  if (packBoxEditing >= 0) packDoneBoxes[packBoxEditing] = rec;
+  else packDoneBoxes.push(rec);
+  closePackBoxModal();
+  renderPackDoneBoxList();
+  showToast('箱号 ' + no + ' 已装箱 ' + itemList.length + ' 项物品');
+}
+
 function startVoicePackDone() {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert('当前浏览器不支持语音识别，请使用 Chrome'); return; }
   var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1711,99 +1972,36 @@ function startVoicePackDone() {
   rec.onerror = function() { alert('语音识别失败，请重试'); };
   rec.start(); showToast('正在聆听...');
 }
-function onPackDoneFileChange(input) {
-  var files = input.files;
-  var list = document.getElementById('packDoneFileList');
-  list.innerHTML = '';
-  for (var i=0; i<files.length; i++) {
-    var f = files[i];
-    var size = f.size<1024?'<1KB':f.size<1048576?(f.size/1024).toFixed(1)+'KB':(f.size/1048576).toFixed(1)+'MB';
-    list.innerHTML += '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:var(--primary-light);border-radius:12px;font-size:11px;color:var(--primary);margin:2px;">'+f.name+' ('+size+')</span>';
-  }
-  // ===== 真·AI识别接口占位（打包完成 - 上传包裹照片） =====
-  // 当前为前端模拟：上传文件后 setTimeout 生成演示物品清单（packAiItems）。
-  // 接后端时替换为：将 files 以 multipart/form-data POST 到视觉识别服务
-  //   POST /api/vision/recognize  { images:[File...], xy: order.xy }
-  //   返回 [{ name, cat:'普货'|'敏货', conf, photo }]，再 renderPackAiList()。
-  // 注意：识别结果均为演示数据，真实分类与置信度以模型返回为准。
-  if (files.length > 0) {
-    document.getElementById('packAiArea').style.display = 'block';
-    document.getElementById('packAiScanning').style.display = 'block';
-    document.getElementById('packAiList').innerHTML = '';
-    document.getElementById('packAiStatus').textContent = '分析中...';
-    packAiItems = [];
-    var el2 = document.getElementById('packAiScanning');
-    setTimeout(function(){
-      if (!el2 || el2.style.display === 'none') return;
-      el2.innerHTML = '<span style="color:#10B981;display:inline-flex;align-items:center;gap:4px;">'+uiIco('check','#10B981',14)+'识别完成</span>';
-      if (airItems && airItems.length) {
-        packAiItems = airItems.map(function(item){
-          return { name: item.name, cat: item.cat };
-        });
-      } else {
-        packAiItems = [
-          { name:'棉质T恤×2', cat:'普货' },
-          { name:'书籍杂志×5', cat:'普货' },
-          { name:'陶瓷餐具套装', cat:'普货' },
-          { name:'运动鞋×3', cat:'普货' },
-          { name:'桌面摆件', cat:'普货' },
-          { name:'数据线×10', cat:'普货' },
-          { name:'充电宝×2', cat:'敏货' },
-          { name:'香水×1瓶', cat:'敏货' }
-        ];
-      }
-      document.getElementById('packAiStatus').textContent = '已识别 '+packAiItems.length+' 件';
-      renderPackAiList();
-    }, 1500);
-  }
-}
-function renderPackAiList() {
-  var list = document.getElementById('packAiList');
-  list.innerHTML = '';
-  packAiItems.forEach(function(item, i){
-    var bg = item.cat==='普货'?'#ECFDF5':'#FEF2F2';
-    var cl = item.cat==='普货'?'#10B981':'#DC2626';
-    list.innerHTML += '<div style="display:inline-flex;align-items:center;gap:3px;padding:4px 10px;background:'+bg+';border:1px solid '+(item.cat==='普货'?'#A7F3D0':'#FECACA')+';border-radius:16px;font-size:11px;cursor:pointer;" onclick="deletePackAiItem('+i+')" title="点击删除">'+
-      '<span>'+itemSvg(item.cat,13)+'</span><span style="color:var(--text);">'+item.name+'</span>'+
-      '<span style="font-size:9px;color:'+cl+';margin-left:2px;">×</span>'+
-    '</div>';
-  });
-}
-function addPackAiItem() {
-  var name = document.getElementById('packAiAddName').value.trim();
-  if (!name) return;
-  var cat = document.getElementById('packAiAddCat').value;
-  packAiItems.push({ name:name, cat:cat });
-  document.getElementById('packAiAddName').value = '';
-  renderPackAiList();
-}
-function deletePackAiItem(i) {
-  packAiItems.splice(i, 1);
-  renderPackAiList();
-}
 function submitPackDone() {
   var reason = document.getElementById('packDoneReason').value.trim();
   if (!reason) { alert('请填写完成说明'); return; }
   var o = orderPackages.find(function(p){ return p.id===packDoneId; });
   if (!o) return;
-  var _isMix = o.type==='混合仓';
-  if (_isMix && !(document.getElementById('packDoneQyBox').value||'').trim()) { alert('请填写清源仓打包箱数'); return; }
-  if (_isMix && !(document.getElementById('packDonePlBox').value||'').trim()) { alert('请填写派力仓打包箱数'); return; }
-  var files = document.getElementById('packDoneFile').files;
-  if (files.length===0) { alert(_isMix?'请上传清源仓打包图片':'请上传附件或图片'); return; }
-  if (_isMix && document.getElementById('packDoneXcFile').files.length===0) { alert('请上传派力仓打包图片'); return; }
-  var fileNames = [];
-  for (var i=0; i<files.length; i++) fileNames.push(files[i].name);
-  var xcFileNames = [];
-  if (_isMix) { var xcf = document.getElementById('packDoneXcFile').files; for (var j=0;j<xcf.length;j++) xcFileNames.push(xcf[j].name); }
-  o.status = '完成待审核'; o.packDoneAt = new Date().toISOString().slice(0,16);
-  o.packDoneReason = reason; o.packDoneFiles = fileNames;
-  o.packDoneXcFiles = xcFileNames;
-  o.packDoneQyBox = _isMix ? (document.getElementById('packDoneQyBox').value||'').trim() : '';
-  o.packDonePlBox = _isMix ? (document.getElementById('packDonePlBox').value||'').trim() : '';
+  if (!packDoneBoxes.length) { alert('请先添加并完成至少一个箱的装箱'); return; }
+  // 统计
+  var photoCount = 0, itemCount = 0, xcBoxCount = 0, qyBoxCount = 0, xcPhotos = 0;
+  packDoneBoxes.forEach(function(b){
+    photoCount += (b.packFiles.length + b.packNames.length + b.sealFiles.length + b.sealNames.length);
+    itemCount += b.itemList.length;
+    var pc = b.packFiles.length + b.packNames.length;
+    var sc = b.sealFiles.length + b.sealNames.length;
+    if (b.warehouse === '派力仓') { xcBoxCount++; xcPhotos += (pc + sc); }
+    else { qyBoxCount++; }
+  });
+  o.packDoneBoxes = packDoneBoxes.map(cloneH5PackBox);
+  o.packBoxCount = packDoneBoxes.length;
+  o.packCompleteItems = itemCount;
+  o.packCompletePhotos = photoCount;
+  o.packCompleteQyBoxCount = qyBoxCount;
+  o.packCompleteXcBoxCount = xcBoxCount;
+  o.packCompleteXcPhotos = xcPhotos;
+  o.packCompleteReason = reason;
+  o.status = '完成待审核';
+  o.packDoneAt = new Date().toISOString().slice(0,16);
+  o.packDoneReason = reason;
   o.updatedAt = new Date().toISOString().slice(0,16);
-  o.packItems = packAiItems.slice();
-  hidePackDoneModal(); renderCurrentPage(); showToast('已提交完成审核：'+orderDisplayXy(o));
+  hidePackDoneModal(); renderCurrentPage();
+  showToast('已提交完成审核：' + orderDisplayXy(o) + ' · 共 ' + o.packBoxCount + ' 箱');
 }
 
 function qcDetailPreview(i) {
@@ -2757,6 +2955,8 @@ var startPackAiItems = [];   // 当前tab的物品清单（引用 spTabs[spActiv
 var spTabs = [];             // 拼团时多个XY号tab：{xy,demand,files,aiItems,scanned}
 var spActive = 0;            // 当前激活tab索引
 var spIsGroup = false;       // 是否拼团多XY
+var startPackParcelState = []; // 开始打包：包裹列表 [{key,express,type,items,photos}]
+var PACK_START_TYPES = ['华侨包','超大件'];
 
 function startOrderPack(id) {
   startPackId = id;
@@ -2767,10 +2967,22 @@ function startOrderPack(id) {
   var _t = (o && o.xy) ? o.xy : (o ? o.code : '');
   if (o && o.xpd) _t += ' · XYPD：' + o.xpd;
   document.getElementById('startPackCode').textContent = _t;
+  // 混合仓提示
+  var _smt = document.getElementById('startPackMixTip');
+  if (o && o.type==='混合仓') { _smt.style.display='block'; _smt.textContent='当前订单为混合仓，打包员注意检查青源仓和派力仓包裹'; }
+  else _smt.style.display='none';
   // 加货单关联标签 + 加货单图片（仅加货订单显示）
   renderStartPackAddGoods(o);
   spActive = 0;
   startPackAiItems = spTabs[0].aiItems;
+
+  // 按包裹初始化（对齐 PC：包裹数 + 每包裹对应上传拆包图）
+  startPackParcelState = packStartInitParcels(o);
+  packStartAiResetParcel();
+
+  // 清空包裹编号筛选
+  var _spSearch = document.getElementById('startPackSearch');
+  if (_spSearch) _spSearch.value = '';
 
   renderStartPackXyTabs();
   renderStartPackContent();
@@ -2778,10 +2990,59 @@ function startOrderPack(id) {
   // 重置按钮
   document.getElementById('startPackAiBtn').style.display = '';
   document.getElementById('startPackAiBtn').disabled = true;
-  document.getElementById('startPackAiBtn').innerHTML = uiIco('robot','currentColor',14)+' 下一步';
+  document.getElementById('startPackAiBtn').innerHTML = uiIco('robot','currentColor',14)+' AI识别';
   document.getElementById('startPackModal').classList.add('show');
 }
 function hideStartPackModal() { document.getElementById('startPackModal').classList.remove('show'); startPackId = null; }
+
+// ===== 扫描包裹面单（读取单号填入指定筛选框） =====
+var waybillScanTimer = null;
+var waybillScanTarget = '';    // 目标输入框 id
+var waybillScanRenderFn = null; // 扫描后回填刷新函数
+// 通用：扫描面单并把单号填入 targetInputId，再调用 renderFn（可选）刷新
+function openWaybillScanTo(targetInputId, renderFnName) {
+  waybillScanTarget = targetInputId || '';
+  waybillScanRenderFn = renderFnName || '';
+  document.getElementById('waybillScanModal').classList.add('show');
+  var line = document.getElementById('waybillScanLine');
+  if (line) line.style.animation = 'waybillScanMove 1.4s ease-in-out infinite';
+  var hint = document.getElementById('waybillScanHint');
+  if (hint) hint.textContent = '正在扫描…';
+  if (waybillScanTimer) clearTimeout(waybillScanTimer);
+  waybillScanTimer = setTimeout(function(){
+    // 从当前订单包裹里随机取一个快递单号（演示读取单号）
+    var picked = '';
+    if (startPackParcelState && startPackParcelState.length) {
+      var p = startPackParcelState[Math.floor(Math.random() * startPackParcelState.length)];
+      picked = p.express || '';
+    }
+    if (!picked) picked = 'SF123' + String(Math.floor(1000000000 + Math.random() * 9000000000));
+    // 写入目标筛选框并刷新
+    if (waybillScanTarget) {
+      var kw = document.getElementById(waybillScanTarget);
+      if (kw) kw.value = picked;
+    }
+    if (waybillScanRenderFn && typeof window[waybillScanRenderFn] === 'function') {
+      window[waybillScanRenderFn]();
+    }
+    // 扫描成功态
+    var hintEl = document.getElementById('waybillScanHint');
+    if (hintEl) hintEl.innerHTML = '<span style="color:#10B981;display:inline-flex;align-items:center;gap:4px;">' + uiIco('check','#10B981',14) + '识别到单号 ' + picked + '</span>';
+    var ln = document.getElementById('waybillScanLine');
+    if (ln) ln.style.animation = 'none';
+    // 1s 后自动关闭
+    setTimeout(function(){ closeWaybillScan(); }, 1000);
+  }, 1200);
+}
+// 兼容：开始打包弹框的扫描入口（默认填入包裹筛选框）
+function openWaybillScan() {
+  openWaybillScanTo('startPackSearch', 'renderStartPackContent');
+}
+function closeWaybillScan() {
+  if (waybillScanTimer) { clearTimeout(waybillScanTimer); waybillScanTimer = null; }
+  var m = document.getElementById('waybillScanModal');
+  if (m) m.classList.remove('show');
+}
 
 // 加货单关联标签 + 加货单图片（仅加货订单显示，只读预览）
 function renderStartPackAddGoods(o) {
@@ -2859,7 +3120,7 @@ function switchStartPackXy(i) {
   } else {
     document.getElementById('startPackAiBtn').style.display = '';
     document.getElementById('startPackAiBtn').disabled = t.files.length===0;
-    document.getElementById('startPackAiBtn').innerHTML = uiIco('robot','currentColor',14)+' 下一步';
+    document.getElementById('startPackAiBtn').innerHTML = uiIco('robot','currentColor',14)+' AI识别';
   }
 }
 
@@ -2898,33 +3159,150 @@ function onStartPackBigFileChange(input) {
   document.getElementById('startPackBigFileList').innerHTML = renderSpBigFileList(t);
 }
 
-// 渲染当前XY号的内容区
+// 包裹图片组快递单号（对齐 PC getImgGroupName：hash 成 SF123 开头单号）
+function h5ImgGroupName(photo) {
+  var s = String(photo || '');
+  var h = 0;
+  for (var i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) >>> 0; }
+  return 'SF123' + ('0000000000' + (h % 10000000000)).slice(-10);
+}
+// 初始化包裹列表：按 packItems 的 photo（图片组）分组，每组=一个包裹
+function packStartInitParcels(o) {
+  var items = (o && o.packItems) || [];
+  if (!items.length) {
+    items = [
+      { name:'棉质T恤', qty:2, cat:'普货', photo:'IMG_001.jpg' },
+      { name:'书籍杂志', qty:5, cat:'普货', photo:'IMG_001.jpg' },
+      { name:'充电宝', qty:1, cat:'敏货', photo:'IMG_001.jpg' },
+      { name:'陶瓷餐具', qty:1, cat:'普货', photo:'IMG_002.jpg' },
+      { name:'香水', qty:2, cat:'敏货', photo:'IMG_002.jpg' },
+      { name:'折叠床', qty:1, cat:'普货', photo:'IMG_003.jpg' },
+      { name:'跑步机', qty:1, cat:'普货', photo:'IMG_003.jpg' }
+    ];
+    if (o) o.packItems = items;
+  }
+  // 无 photo 的补序号
+  var seq = 0;
+  items.forEach(function(it){ if (!it.photo && !it.image) { seq++; it.photo = 'IMG_' + String(seq).padStart(3,'0') + '.jpg'; } });
+  var groups = {}, order = [];
+  items.forEach(function(it){
+    var key = it.photo || it.image || '未分组';
+    if (!groups[key]) {
+      groups[key] = { key: key, express: h5ImgGroupName(key), items: [], type: '华侨包', photos: [] };
+      order.push(groups[key]);
+    }
+    groups[key].items.push(it);
+  });
+  // 组内有超大件物品 → 自动标记超大件
+  order.forEach(function(g){
+    var hasBig = g.items.some(function(it){ return getItemPkgCat(it.name) === '超大件'; });
+    if (hasBig) g.type = '超大件';
+  });
+  if (!order.length) order.push({ key:'未分组', express:'—', items:[], type:'华侨包', photos:[] });
+  return order;
+}
+function packStartParcelPhotoCount() {
+  return startPackParcelState.reduce(function(n, p){ return n + (p.photos||[]).length; }, 0);
+}
+function packStartAiResetParcel() {
+  startPackAiItems = [];
+}
+
+// 渲染开始打包：包裹数 + 每个包裹对应上传拆包图
 function renderStartPackContent() {
   var el = document.getElementById('startPackContent');
-  var t = spTabs[spActive];
-  var _o = orderPackages.find(function(p){ return p.id===startPackId; });
-  var _isMix = _o && _o.type==='混合仓';
+  if (!el) return;
+  var _kwEl = document.getElementById('startPackSearch');
+  var _kw = ((_kwEl && _kwEl.value) ? _kwEl.value : '').trim().toLowerCase();
+  var total = startPackParcelState.length;
+  var uploaded = startPackParcelState.filter(function(p){ return (p.photos||[]).length > 0; }).length;
+  var photoCnt = packStartParcelPhotoCount();
+  var totEl = document.getElementById('startPackParcelTotal');
+  if (totEl) totEl.textContent = '共 ' + total;
+  var statEl = document.getElementById('startPackParcelStat');
+  if (statEl) statEl.innerHTML = '<span style="color:' + (total > 0 && uploaded === total ? '#16A34A' : '#D97706') + ';font-weight:600;">已上传 ' + uploaded + '/' + total + '</span> 个包裹 · 共 ' + photoCnt + ' 张照片';
+  if (!total) {
+    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-secondary);font-size:12px;">该订单暂无包裹数据</div>';
+    return;
+  }
+  // 包裹编号筛选（按快递单号过滤）
+  var visible = startPackParcelState.map(function(p, i){ return { p: p, i: i }; });
+  if (_kw) {
+    visible = visible.filter(function(x){
+      return (x.p.express + '|' + x.p.key + '|' + x.p.items.map(function(it){ return it.name; }).join('|')).toLowerCase().indexOf(_kw) >= 0;
+    });
+  }
   var h = '';
-
-  if (spIsGroup) {
-    h += '<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">'+t.xy+'</div>';
+  if (!visible.length) {
+    h += '<div style="text-align:center;padding:24px;color:var(--text-secondary);font-size:12px;">没有匹配「' + _kw + '」的包裹</div>';
   }
-
-  // 上传图片（混合仓：清源仓包裹图片 + 派力仓包裹图片；其它：华侨包拆包图片 + 超大件拆包图片）
-  h += '<label style="font-size:12px;color:var(--text);">'+(_isMix?'清源仓包裹图片':'华侨包拆包图片')+' <span style="color:var(--danger)">*必传</span></label>';
-  h += '<input type="file" id="startPackFile" multiple accept="image/*" onchange="onStartPackFileChange(this)" style="margin-bottom:4px;display:block;width:100%;">';
-  h += '<div id="startPackFileList" style="margin-bottom:8px;">'+(t.files.length?renderSpFileList(t):'')+'</div>';
-  if (_isMix) {
-    h += '<label style="font-size:12px;color:var(--text);">派力仓包裹图片 <span style="color:var(--danger)">*必传</span></label>';
-    h += '<input type="file" id="startPackXcFile" multiple accept="image/*" onchange="onStartPackXcFileChange(this)" style="margin-bottom:4px;display:block;width:100%;">';
-    h += '<div id="startPackXcFileList" style="margin-bottom:8px;">'+(t.xcFiles&&t.xcFiles.length?renderSpXcFileList(t):'')+'</div>';
-  } else {
-    h += '<label style="font-size:12px;color:var(--text);">超大件拆包图片 <span style="color:var(--text-secondary);font-size:11px;">(选填)</span></label>';
-    h += '<input type="file" id="startPackBigFile" multiple accept="image/*" onchange="onStartPackBigFileChange(this)" style="margin-bottom:4px;display:block;width:100%;">';
-    h += '<div id="startPackBigFileList" style="margin-bottom:8px;">'+(t.bigFiles&&t.bigFiles.length?renderSpBigFileList(t):'')+'</div>';
-  }
-
+  visible.forEach(function(x){
+    var p = x.p, i = x.i;
+    var qty = p.items.reduce(function(n, it){ return n + (it.qty||1); }, 0);
+    var names = p.items.map(function(it){ return it.name + '×' + (it.qty||1); }).join('、') || '—';
+    var isBig = p.type === '超大件';
+    var tColor = isBig ? '#D97706' : '#16A34A';
+    var tBg = isBig ? '#FEF3C7' : '#E7F3FB';
+    var hasPhoto = (p.photos||[]).length > 0;
+    h += '<div style="border:1px solid ' + (hasPhoto ? '#BBF7D0' : 'var(--border)') + ';border-radius:8px;padding:8px 10px;margin-bottom:8px;background:#fff;">';
+    h += '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">';
+    h += '<span style="font-size:12px;font-weight:600;color:var(--text);">' + p.express + '</span>';
+    h += '<span style="font-size:11px;color:var(--text-secondary);">' + p.items.length + ' 项 · ' + qty + ' 件</span>';
+    h += '<span style="margin-left:auto;display:inline-flex;align-items:center;gap:4px;">';
+    h += '<select onchange="setPackStartParcelType(' + i + ',this.value)" title="包裹类型" style="font-size:11px;font-weight:600;color:' + tColor + ';background:' + tBg + ';border:1px solid ' + tColor + ';border-radius:6px;padding:2px 6px;outline:none;cursor:pointer;">';
+    PACK_START_TYPES.forEach(function(tp){ h += '<option value="' + tp + '"' + (p.type === tp ? ' selected' : '') + '>' + tp + '</option>'; });
+    h += '</select>';
+    h += '</span>';
+    h += '</div>';
+    h += '<div style="font-size:11px;color:var(--text-secondary);margin:4px 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + names.replace(/"/g,'&quot;') + '">' + names + '</div>';
+    h += '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;">';
+    (p.photos||[]).forEach(function(ph, pi){
+      h += '<div style="position:relative;width:62px;height:62px;border-radius:6px;overflow:hidden;border:1px solid var(--border);background:#F1F5F9;">' +
+        '<img src="' + ph.url + '" alt="" style="width:62px;height:62px;object-fit:cover;display:block;">' +
+        '<span onclick="removePackStartParcelPhoto(' + i + ',' + pi + ')" title="删除" style="position:absolute;right:2px;top:2px;width:15px;height:15px;border-radius:50%;background:var(--danger);color:#fff;font-size:11px;line-height:15px;text-align:center;cursor:pointer;">×</span></div>';
+    });
+    h += '<label style="width:62px;height:62px;border:1px dashed ' + (hasPhoto ? 'var(--border)' : '#F59E0B') + ';border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:2px;color:' + (hasPhoto ? 'var(--text-secondary)' : '#D97706') + ';background:' + (hasPhoto ? '#fff' : '#FFFBEB') + ';">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;"><path d="M12 5v14"/><path d="M5 12h14"/></svg>' +
+      '<span style="font-size:9px;">上传拆包图</span>' +
+      '<input type="file" accept="image/*" multiple style="display:none;" onchange="onPackStartParcelFileChange(this,' + i + ')">' +
+      '</label>';
+    h += '</div>';
+    h += '</div>';
+  });
   el.innerHTML = h;
+  // 更新「AI识别」按钮：所有包裹都有照片才启用
+  var btn = document.getElementById('startPackAiBtn');
+  if (btn) {
+    var allUp = total > 0 && uploaded === total;
+    btn.disabled = !allUp;
+    btn.innerHTML = uiIco('robot','currentColor',14) + ' AI识别';
+  }
+}
+function onPackStartParcelFileChange(input, i) {
+  var p = startPackParcelState[i];
+  if (!p) return;
+  var files = input.files || [];
+  for (var k = 0; k < files.length; k++) {
+    (function(f){
+      var reader = new FileReader();
+      reader.onload = function(e){
+        p.photos.push({ name: f.name, url: e.target.result });
+        renderStartPackContent();
+      };
+      reader.readAsDataURL(f);
+    })(files[k]);
+  }
+  input.value = '';
+}
+function removePackStartParcelPhoto(i, pi) {
+  var p = startPackParcelState[i];
+  if (!p) return;
+  p.photos.splice(pi, 1);
+  renderStartPackContent();
+}
+function setPackStartParcelType(i, v) {
+  if (startPackParcelState[i]) startPackParcelState[i].type = v;
+  renderStartPackContent();
 }
 
 function onStartPackFileChange(input) {
@@ -2936,7 +3314,7 @@ function onStartPackFileChange(input) {
   list.innerHTML = renderSpFileList(t);
   if (files.length > 0) {
     document.getElementById('startPackAiBtn').disabled = false;
-    document.getElementById('startPackAiBtn').innerHTML = uiIco('robot','currentColor',14)+' 下一步';
+    document.getElementById('startPackAiBtn').innerHTML = uiIco('robot','currentColor',14)+' AI识别';
     t.scanned = false;
     t.aiItems = [];
     startPackAiItems = t.aiItems;
@@ -2946,51 +3324,35 @@ function onStartPackFileChange(input) {
   }
 }
 
-// 触发AI识别（针对当前XY号）
+// 触发AI识别（按包裹：每个包裹的照片识别出对应物品清单）
 function triggerStartPackAi() {
-  // ===== 真·AI识别接口占位（打包 - 拆包图片） =====
-  // 当前为前端模拟：上传拆包图片后 setTimeout 生成演示物品清单（startPackAiItems）。
-  // 接后端时替换为：将当前 XY 号(t.xy)对应的图片 POST 到视觉识别服务
-  //   POST /api/vision/recognize  { images:t.files, xy:t.xy }
-  //   返回 [{ name, cat, conf, photo }] 写入 t.aiItems 并 renderStartPackAiList()。
-  var t = spTabs[spActive];
-  var _mix = orderPackages.find(function(p){ return p.id===startPackId; });
-  var _isMixAi = _mix && _mix.type==='混合仓';
-  if (t.files.length === 0) { alert(_isMixAi?'请先上传清源仓包裹图片':'请先上传华侨包拆包图片'); return; }
+  // 校验：每个包裹都要上传拆包图
+  var missing = startPackParcelState.filter(function(p){ return !(p.photos||[]).length; });
+  if (missing.length) {
+    alert('请为包裹 ' + missing[0].express + ' 上传拆包图片' + (missing.length > 1 ? ('（还有 ' + (missing.length - 1) + ' 个包裹未上传）') : ''));
+    return;
+  }
   var _spBtn = document.getElementById('startPackAiBtn');
   if (_spBtn) { _spBtn.innerHTML = uiIco('search','currentColor',14)+' 识别中...'; _spBtn.disabled = true; }
   startPackAiItems = [];
   setTimeout(function(){
-    // 优先同步AI识别Tab数据，或生成演示数据
-    var base;
-    if (airItems && airItems.length) {
-      base = airItems.map(function(item){
-        var qtyMatch = item.name.match(/×(\d+)/);
-        var qty = qtyMatch ? parseInt(qtyMatch[1]) : 1;
-        var cleanName = item.name.replace(/×\d+.*/,'');
-        return { name: cleanName, qty: qty, cat: item.cat, pkgCat: getItemPkgCat(cleanName), photo: item.photo||'IMG_001.jpg' };
+    // AI识别：以每个包裹内的物品为基础生成清单（识别结果挂到对应包裹图片组）
+    var base = [];
+    startPackParcelState.forEach(function(p){
+      (p.items||[]).forEach(function(it){
+        base.push({ name: it.name, qty: it.qty || 1, cat: it.cat || '普货', pkgCat: getItemPkgCat(it.name), photo: p.key });
       });
-    } else {
-      var pool = [
-        { name:'棉质T恤', qty:2, cat:'普货', pkgCat:'华侨包', photo:'IMG_001.jpg' },
-        { name:'书籍杂志', qty:5, cat:'普货', pkgCat:'华侨包', photo:'IMG_001.jpg' },
-        { name:'陶瓷餐具', qty:1, cat:'普货', pkgCat:'华侨包', photo:'IMG_001.jpg' },
-        { name:'运动鞋', qty:3, cat:'普货', pkgCat:'华侨包', photo:'IMG_002.jpg' },
-        { name:'数据线', qty:10, cat:'普货', pkgCat:'华侨包', photo:'IMG_002.jpg' },
-        { name:'充电宝', qty:2, cat:'敏货', pkgCat:'华侨包', photo:'IMG_003.jpg' },
-        { name:'香水', qty:1, cat:'敏货', pkgCat:'华侨包', photo:'IMG_003.jpg' }
-      ];
-      var off = (spActive * 3) % 7;
-      base = [];
-      for (var k=0; k<6; k++) {
-        var it = pool[(off+k) % 7];
-        base.push({ name:it.name, qty:it.qty, cat:it.cat, pkgCat:'华侨包', photo:it.photo });
+      // 无物品的包裹兜底生成演示物品
+      if (!(p.items||[]).length) {
+        base.push({ name:'衣物', qty:2, cat:'普货', pkgCat:'华侨包', photo:p.key });
+        base.push({ name:'日用品', qty:1, cat:'普货', pkgCat:'华侨包', photo:p.key });
       }
-      base.push({ name:'折叠床', qty:1, cat:'普货', pkgCat:'超大件', photo:'IMG_004.jpg' });
-      base.push({ name:'办公椅', qty:2, cat:'普货', pkgCat:'超大件', photo:'IMG_004.jpg' });
-      base.push({ name:'跑步机', qty:1, cat:'普货', pkgCat:'超大件', photo:'IMG_005.jpg' });
+    });
+    if (!base.length) {
+      base.push({ name:'棉质T恤', qty:2, cat:'普货', pkgCat:'华侨包', photo:'IMG_001.jpg' });
     }
     startPackAiItems = base;
+    var t = spTabs[spActive];
     t.aiItems = base;
     t.scanned = true;
     currentStartPackAiCat = '华侨包';
@@ -3322,14 +3684,10 @@ function spEmAddRow(phKey, photoName) {
 function saveStartPackDraft() {
   var o = orderPackages.find(function(p){ return p.id===startPackId; });
   if (!o) return;
-  var fileNames = [];
-  var allItems = [];
-  spTabs.forEach(function(t){
-    t.files.forEach(function(f){ fileNames.push(f.name); });
-    allItems = allItems.concat(t.aiItems);
+  o.packStartParcels = startPackParcelState.map(function(p){
+    return { express: p.express, type: p.type, items: p.items.length,
+             photos: (p.photos||[]).map(function(ph){ return { name: ph.name, url: ph.url }; }) };
   });
-  o.packStartFiles = fileNames;
-  o.packItems = allItems;
   o.packDraft = true;
   o.updatedAt = new Date().toISOString().slice(0,16);
   showToast('已临时保存，可稍后继续打包');
@@ -3337,33 +3695,25 @@ function saveStartPackDraft() {
 function submitStartPack() {
   var o = orderPackages.find(function(p){ return p.id===startPackId; });
   if (!o) return;
-  if (spIsGroup) {
-    // 校验所有XY号都已完成识别
-    var notDone = spTabs.filter(function(t){ return !t.scanned; });
-    if (notDone.length) { alert('还有 '+notDone.length+' 个XY号未完成AI识别'); return; }
-    var fileNames = [];
-    var allItems = [];
-    spTabs.forEach(function(t){
-      t.files.forEach(function(f){ fileNames.push(f.name); });
-      allItems = allItems.concat(t.aiItems);
-    });
-    o.packStartFiles = fileNames;
-    o.packItems = allItems;
-  } else {
-    var t = spTabs[0];
-    var _isMix2 = o.type==='混合仓';
-    if (t.files.length === 0) { alert(_isMix2?'请上传清源仓包裹图片':'请上传华侨包拆包图片'); return; }
-    if (_isMix2 && (t.xcFiles||[]).length === 0) { alert('请上传派力仓包裹图片'); return; }
-    var fileNames2 = [];
-    t.files.forEach(function(f){ fileNames2.push(f.name); });
-    o.packStartFiles = fileNames2;
-    o.packStartXcFiles = _isMix2 ? (t.xcFiles||[]).map(function(f){ return f.name; }) : [];
-    o.packStartBigFiles = _isMix2 ? [] : (t.bigFiles||[]).map(function(f){ return f.name; });
-    o.packItems = t.aiItems.slice();
+  // 校验：每个包裹都要上传拆包图
+  if (!startPackParcelState.length) { alert('该订单暂无包裹数据'); return; }
+  var missing = startPackParcelState.filter(function(p){ return !(p.photos||[]).length; });
+  if (missing.length) {
+    alert('请为包裹 ' + missing[0].express + ' 上传拆包图片' + (missing.length > 1 ? ('（还有 ' + (missing.length - 1) + ' 个包裹未上传）') : ''));
+    return;
   }
+  // 用 AI 识别结果更新订单包裹清单
+  if (startPackAiItems.length) o.packItems = startPackAiItems.slice();
+  o.packStartParcels = startPackParcelState.map(function(p){
+    return { express: p.express, type: p.type, items: p.items.length,
+             photos: (p.photos||[]).map(function(ph){ return { name: ph.name, url: ph.url }; }) };
+  });
+  o.packStartPhotos = packStartParcelPhotoCount();
+  o.packStartItems = startPackAiItems.length;
   o.status = '打包待审核'; o.packer = '赵六';
   o.updatedAt = new Date().toISOString().slice(0,16);
-  hideStartPackAiModal(); renderCurrentPage(); showToast('已提交打包审核：'+orderDisplayXy(o));
+  hideStartPackAiModal(); renderCurrentPage();
+  showToast('已提交打包审核：' + orderDisplayXy(o) + ' · ' + startPackParcelState.length + ' 个包裹 / ' + o.packStartPhotos + ' 张照片');
 }
 
 // ====== BADGES ======
