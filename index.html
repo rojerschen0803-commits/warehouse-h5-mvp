@@ -379,7 +379,7 @@ body { font-family:"Source Han Sans SC","Source Han Sans CN","Noto Sans SC","Not
   <div class="btn-row">
     <button class="btn" onclick="hideStartPackModal()" style="flex:1;">取消</button>
     <button class="btn" onclick="saveStartPackDraft()" style="flex:1;">保存</button>
-    <button class="btn btn-primary" id="startPackAiBtn" onclick="triggerStartPackAi()" style="flex:1;" disabled>AI识别</button>
+    <button class="btn btn-primary" id="startPackAiBtn" onclick="triggerStartPackAi()" style="flex:1;">AI识别</button>
   </div>
 </div></div>
 
@@ -2989,7 +2989,7 @@ function startOrderPack(id) {
 
   // 重置按钮
   document.getElementById('startPackAiBtn').style.display = '';
-  document.getElementById('startPackAiBtn').disabled = true;
+  document.getElementById('startPackAiBtn').disabled = false;
   document.getElementById('startPackAiBtn').innerHTML = uiIco('robot','currentColor',14)+' AI识别';
   document.getElementById('startPackModal').classList.add('show');
 }
@@ -3270,11 +3270,10 @@ function renderStartPackContent() {
     h += '</div>';
   });
   el.innerHTML = h;
-  // 更新「AI识别」按钮：所有包裹都有照片才启用
+  // 「AI识别」按钮：始终可点（点击后识别图片、列出物品）
   var btn = document.getElementById('startPackAiBtn');
   if (btn) {
-    var allUp = total > 0 && uploaded === total;
-    btn.disabled = !allUp;
+    btn.disabled = false;
     btn.innerHTML = uiIco('robot','currentColor',14) + ' AI识别';
   }
 }
@@ -3324,14 +3323,8 @@ function onStartPackFileChange(input) {
   }
 }
 
-// 触发AI识别（按包裹：每个包裹的照片识别出对应物品清单）
+// 触发AI识别（点击 AI识别：识别图片、列出物品清单）
 function triggerStartPackAi() {
-  // 校验：每个包裹都要上传拆包图
-  var missing = startPackParcelState.filter(function(p){ return !(p.photos||[]).length; });
-  if (missing.length) {
-    alert('请为包裹 ' + missing[0].express + ' 上传拆包图片' + (missing.length > 1 ? ('（还有 ' + (missing.length - 1) + ' 个包裹未上传）') : ''));
-    return;
-  }
   var _spBtn = document.getElementById('startPackAiBtn');
   if (_spBtn) { _spBtn.innerHTML = uiIco('search','currentColor',14)+' 识别中...'; _spBtn.disabled = true; }
   startPackAiItems = [];
