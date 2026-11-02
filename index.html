@@ -294,44 +294,64 @@ body { font-family:"Source Han Sans SC","Source Han Sans CN","Noto Sans SC","Not
   </div>
 </div></div>
 
-<!-- 选择装箱物品（二级弹框：箱号 + 所属仓库 + 装箱/封箱图片 + 勾选物品） -->
-<div class="modal-overlay" id="packBoxItemModal"><div class="modal" style="max-height:86vh;overflow-y:auto;">
-  <h3>选择装箱物品</h3>
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-    <span style="font-size:12px;color:var(--text-secondary);white-space:nowrap;">箱号</span>
-    <input type="text" id="packBoxNo" placeholder="请输入箱号" style="flex:1;min-width:0;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-weight:600;outline:none;">
+<!-- 装箱物品（二级弹框：箱号 + 所属仓库 + 装箱/封箱图片 + 录入物品装箱 + AI识别参照） -->
+<div class="modal-overlay" id="packBoxItemModal"><div class="modal" style="max-height:86vh;overflow-y:auto;padding:14px 16px 16px;">
+  <h3 style="margin:0 0 8px;">录入物品装箱</h3>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+    <span style="font-size:12px;color:var(--text-secondary);white-space:nowrap;flex-shrink:0;">箱号</span>
+    <span id="packBoxNo" style="flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
   </div>
-  <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:8px;">
     <span style="font-size:12px;color:var(--text-secondary);white-space:nowrap;flex-shrink:0;">所属仓库</span>
-    <label style="display:inline-flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;color:var(--text);white-space:nowrap;flex-shrink:0;"><input type="radio" name="packBoxWh" value="青源仓" checked onchange="setPackBoxWarehouse(this.value)" style="cursor:pointer;margin:0;flex-shrink:0;">青源仓</label>
-    <label style="display:inline-flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;color:var(--text);white-space:nowrap;flex-shrink:0;"><input type="radio" name="packBoxWh" value="派力仓" onchange="setPackBoxWarehouse(this.value)" style="cursor:pointer;margin:0;flex-shrink:0;">派力仓</label>
+    <label style="display:inline-flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;color:var(--text);white-space:nowrap;flex-shrink:0;margin:0;"><input type="radio" name="packBoxWh" value="青源仓" checked onchange="setPackBoxWarehouse(this.value)" style="cursor:pointer;margin:0;flex-shrink:0;width:14px;height:14px;padding:0;">青源仓</label>
+    <label style="display:inline-flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;color:var(--text);white-space:nowrap;flex-shrink:0;margin:0;"><input type="radio" name="packBoxWh" value="派力仓" onchange="setPackBoxWarehouse(this.value)" style="cursor:pointer;margin:0;flex-shrink:0;width:14px;height:14px;padding:0;">派力仓</label>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
     <div>
-      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px;">装箱图片 <span style="color:var(--danger);">*</span></div>
-      <label for="packBoxFile_pack" style="display:flex;align-items:center;justify-content:center;gap:6px;border:1px dashed var(--border);border-radius:8px;padding:16px 10px;cursor:pointer;color:var(--text-secondary);font-size:12px;background:var(--card);">+ 上传图片</label>
+      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:3px;">装箱图片 <span style="color:var(--danger);">*</span></div>
+      <label for="packBoxFile_pack" style="display:flex;align-items:center;justify-content:center;gap:5px;border:1px dashed var(--border);border-radius:8px;padding:8px 10px;cursor:pointer;color:var(--text-secondary);font-size:12px;background:var(--card);">+ 上传图片</label>
       <input type="file" id="packBoxFile_pack" accept="image/*" multiple style="display:none;" onchange="onPackBoxFileChange('pack', event)">
       <div id="packBoxPrev_pack" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"></div>
     </div>
     <div>
-      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px;">封箱图片 <span style="color:var(--danger);">*</span></div>
-      <label for="packBoxFile_seal" style="display:flex;align-items:center;justify-content:center;gap:6px;border:1px dashed var(--border);border-radius:8px;padding:16px 10px;cursor:pointer;color:var(--text-secondary);font-size:12px;background:var(--card);">+ 上传图片</label>
+      <div style="font-size:11px;color:var(--text-secondary);margin-bottom:3px;">封箱图片 <span style="color:var(--danger);">*</span></div>
+      <label for="packBoxFile_seal" style="display:flex;align-items:center;justify-content:center;gap:5px;border:1px dashed var(--border);border-radius:8px;padding:8px 10px;cursor:pointer;color:var(--text-secondary);font-size:12px;background:var(--card);">+ 上传图片</label>
       <input type="file" id="packBoxFile_seal" accept="image/*" multiple style="display:none;" onchange="onPackBoxFileChange('seal', event)">
       <div id="packBoxPrev_seal" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"></div>
     </div>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-    <span style="font-size:13px;font-weight:600;">选择物品装箱</span>
-    <span id="packBoxItemStat" style="margin-left:auto;font-size:11px;color:var(--text-secondary);"></span>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+    <span style="font-size:13px;font-weight:600;">录入物品装箱</span>
   </div>
-  <div style="display:flex;gap:8px;margin-bottom:10px;">
-    <div style="flex:1;min-width:0;position:relative;">
-      <input type="text" id="packBoxSearch" placeholder="单号 / 物品名称" oninput="renderPackBoxPool()" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;outline:none;">
+  <div style="position:relative;margin-bottom:8px;">
+    <textarea id="packBoxItemsInput" placeholder="请输入装箱物品，多个物品用逗号分隔" oninput="onPackBoxItemsInput(this.value)" style="width:100%;height:56px;padding:8px 48px 8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none;resize:vertical;box-sizing:border-box;"></textarea>
+    <button onclick="startVoiceBoxItems()" title="语音转文字" style="position:absolute;right:6px;bottom:6px;padding:6px 8px;font-size:12px;border-radius:6px;background:var(--card);border:1px solid var(--border);color:var(--primary);cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
+  </div>
+
+  <div style="margin-bottom:8px;">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+      <span style="font-size:13px;font-weight:600;">物品单</span>
+      <span style="font-size:11px;color:var(--text-secondary);">(选填)</span>
     </div>
-    <button onclick="openWaybillScanTo('packBoxSearch', 'renderPackBoxPool')" title="扫描包裹面单" style="flex-shrink:0;width:36px;height:36px;border-radius:6px;border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--primary);cursor:pointer;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="3" y1="12" x2="21" y2="12"/></svg></button>
+    <label for="packBoxFile_doc" style="display:flex;align-items:center;justify-content:center;gap:5px;border:1px dashed var(--border);border-radius:8px;padding:8px 10px;cursor:pointer;color:var(--text-secondary);font-size:12px;background:var(--card);">+ 上传物品单</label>
+    <input type="file" id="packBoxFile_doc" accept="image/*" multiple style="display:none;" onchange="onPackBoxDocFileChange(event)">
+    <div id="packBoxPrev_doc" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"></div>
   </div>
-  <div id="packBoxPool" style="max-height:300px;overflow-y:auto;margin-bottom:12px;"></div>
-  <div style="display:flex;gap:8px;justify-content:flex-end;"><button class="btn" onclick="closePackBoxModal()">取消</button><button class="btn btn-primary" onclick="confirmPackBox()">确认装箱</button></div>
+
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+    <span style="font-size:13px;font-weight:600;">AI识别物品参照</span>
+    <button onclick="togglePackBoxAiRefAll()" id="packBoxAiRefAllBtn" style="margin-left:auto;padding:4px 12px;border:1px solid var(--border);border-radius:14px;background:var(--card);color:var(--text-secondary);font-size:12px;cursor:pointer;">全选</button>
+    <button onclick="importPackBoxAiRef()" id="packBoxAiRefImportBtn" style="padding:5px 14px;border:1px solid var(--primary);border-radius:16px;background:var(--card);color:var(--primary);font-size:12px;font-weight:600;cursor:pointer;">一键导入</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+    <div id="packBoxAiRefFilterBar" style="display:flex;flex-shrink:0;align-items:center;"></div>
+    <div style="flex:1;min-width:0;">
+      <input type="text" id="packBoxAiRefSearch" placeholder="搜索物品名称 / 属性" oninput="onPackBoxAiRefSearch(this.value)" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;outline:none;box-sizing:border-box;">
+    </div>
+  </div>
+  <div style="font-size:11px;color:#EA580C;margin-bottom:6px;" id="packBoxAiRefHint"></div>
+  <div id="packBoxAiRef" style="max-height:176px;overflow-y:auto;margin-bottom:8px;"></div>
+  <div style="position:sticky;bottom:0;background:var(--card);padding:8px 0 0;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--border);"><button class="btn" onclick="closePackBoxModal()">取消</button><button class="btn" onclick="saveBoxItems()">保存</button><button class="btn btn-primary" onclick="confirmPackBox()">确认装箱</button></div>
 </div></div>
 
 <!-- 打包异常弹框 -->
@@ -376,11 +396,23 @@ body { font-family:"Source Han Sans SC","Source Han Sans CN","Noto Sans SC","Not
   </div>
   <!-- 动态内容区 -->
   <div id="startPackContent"></div>
-  <div class="btn-row">
+  <div class="btn-row" style="position:sticky;bottom:0;background:var(--card);padding:8px 0 0;border-top:1px solid var(--border);margin:0;">
     <button class="btn" onclick="hideStartPackModal()" style="flex:1;">取消</button>
     <button class="btn" onclick="saveStartPackDraft()" style="flex:1;">保存</button>
+    <button class="btn" onclick="openDownloadPhotos()" style="flex:1;">下载</button>
     <button class="btn btn-primary" id="startPackAiBtn" onclick="triggerStartPackAi()" style="flex:1;">AI识别</button>
   </div>
+</div></div>
+
+<!-- 下载图片弹框 -->
+<div class="modal-overlay" id="downloadPhotosModal"><div class="modal" style="max-height:80vh;overflow-y:auto;padding:14px 16px 16px;">
+  <h3 style="margin:0 0 8px;">下载图片</h3>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+    <span style="font-size:12px;color:var(--text-secondary);" id="downloadPhotoCount">共 0 张</span>
+    <button onclick="toggleDownloadAll()" id="downloadAllBtn" style="margin-left:auto;padding:4px 12px;border:1px solid var(--border);border-radius:14px;background:var(--card);color:var(--text-secondary);font-size:12px;cursor:pointer;">全选</button>
+  </div>
+  <div id="downloadPhotoGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-height:340px;overflow-y:auto;margin-bottom:10px;"></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end;"><button class="btn" onclick="closeDownloadPhotos()">取消</button><button class="btn btn-primary" id="downloadConfirmBtn" onclick="confirmDownloadPhotos()">下载</button></div>
 </div></div>
 
 <!-- 扫描包裹面单弹框 -->
@@ -404,17 +436,43 @@ body { font-family:"Source Han Sans SC","Source Han Sans CN","Noto Sans SC","Not
   </div>
 </div></div>
 
-<!-- AI识别物品清单弹框（开始打包 - 下一步） -->
-<div class="modal-overlay" id="startPackAiModal"><div class="modal" style="max-height:85vh;overflow-y:auto;">
-  <h3>AI识别物品清单</h3>
-  <div style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;" id="startPackAiModalCode"></div>
-  <div id="startPackAiCatTabs" style="display:flex;gap:6px;margin-bottom:12px;"></div>
-  <div id="startPackAiToolbar" style="margin-bottom:10px;"></div>
+<!-- 开始打包 - AI识别物品清单弹框 -->
+<div class="modal-overlay" id="startPackAiModal"><div class="modal" style="max-height:88vh;overflow-y:auto;padding:14px 16px 16px;">
+  <h3 style="margin:0 0 10px;">开始打包</h3>
+  <!-- 拍摄提示 -->
+  <div style="display:flex;align-items:flex-start;gap:8px;background:#F1F5F9;border-radius:8px;padding:8px 10px;margin-bottom:10px;">
+    <span style="flex-shrink:0;color:#16A34A;margin-top:1px;display:inline-flex;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+    <span style="font-size:11px;color:var(--text-secondary);line-height:1.5;">拍摄请平铺包裹，确保面单号与物品完全裸露且画面清晰</span>
+  </div>
+  <!-- 标题 + 统计 -->
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+    <span style="font-size:14px;font-weight:700;color:var(--text);display:inline-flex;align-items:center;gap:5px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg>
+      AI识别物品清单
+    </span>
+    <span id="startPackAiStat" style="margin-left:auto;font-size:11px;color:var(--text-secondary);white-space:nowrap;"></span>
+  </div>
+  <!-- 筛选：包裹类别 / 物品属性 -->
+  <div style="display:flex;gap:8px;margin-bottom:10px;">
+    <div style="flex:1;display:flex;align-items:center;gap:4px;min-width:0;">
+      <span style="font-size:11px;color:var(--text-secondary);white-space:nowrap;flex-shrink:0;">包裹类别</span>
+      <select id="startPackAiFilterCat" onchange="onStartPackAiFilter()" style="flex:1;min-width:0;padding:5px 6px;border:1px solid var(--border);border-radius:6px;font-size:12px;outline:none;background:var(--card);color:var(--text);">
+        <option value="全部">全部</option><option value="华侨包">华侨包</option><option value="超大件">超大件</option>
+      </select>
+    </div>
+    <div style="flex:1;display:flex;align-items:center;gap:4px;min-width:0;">
+      <span style="font-size:11px;color:var(--text-secondary);white-space:nowrap;flex-shrink:0;">物品属性</span>
+      <select id="startPackAiFilterAttr" onchange="onStartPackAiFilter()" style="flex:1;min-width:0;padding:5px 6px;border:1px solid var(--border);border-radius:6px;font-size:12px;outline:none;background:var(--card);color:var(--text);">
+        <option value="全部">全部</option><option value="普货">普货</option><option value="敏货">敏货</option><option value="禁运">禁运</option>
+      </select>
+    </div>
+  </div>
   <div id="startPackAiModalList"></div>
-  <div class="btn-row">
-    <button class="btn" onclick="hideStartPackAiModal()" style="flex:1;">取消</button>
-    <button class="btn" onclick="backToStartPackUpload()" style="flex:1;">上传图片</button>
-    <button class="btn btn-primary" onclick="submitStartPack()" style="flex:1;">确认打包</button>
+  <div class="btn-row" style="position:sticky;bottom:0;background:var(--card);padding:8px 0 0;border-top:1px solid var(--border);margin:0;">
+    <button class="btn" onclick="backToStartPackUpload()" style="flex:1;">上一步</button>
+    <button class="btn" onclick="saveStartPackDraft()" style="flex:1;">保存</button>
+    <button class="btn" onclick="splitStartPackOrder()" style="flex:1;">分单</button>
+    <button class="btn btn-primary" onclick="submitStartPack()" style="flex:1;">完成</button>
   </div>
 </div></div>
 
@@ -656,6 +714,32 @@ function seedData() {
       activity: '常规',
       packDoneAt:['打包完成','打包完毕'].indexOf(status)>=0?createdAt:''
     };
+    // 打包中 / 打包完成：补箱号清单演示数据（5 箱）
+    if (status === '打包中' || status === '打包完成') {
+      var demoItems = [
+        { name:'棉质T恤', cat:'普货', qty:2 }, { name:'运动鞋', cat:'普货', qty:1 },
+        { name:'书籍杂志', cat:'普货', qty:3 }, { name:'数据线', cat:'普货', qty:5 },
+        { name:'充电宝', cat:'敏货', qty:1 }, { name:'陶瓷餐具', cat:'普货', qty:2 },
+        { name:'香水', cat:'敏货', qty:1 }, { name:'桌面摆件', cat:'普货', qty:1 }
+      ];
+      o.packDoneBoxes = [];
+      for (var bi = 1; bi <= 5; bi++) {
+        var wh = (bi % 2 === 0) ? '派力仓' : '青源仓';
+        var itCnt = 1 + (bi % 3);   // 每箱 1~3 个物品
+        var itemList = [];
+        var exps = [];
+        for (var k = 0; k < itCnt; k++) {
+          var it = demoItems[(bi + k) % demoItems.length];
+          var exp = 'SF123' + String(2000000000 + i * 7 + bi * 3 + k);
+          exps.push(exp);
+          itemList.push({ express: exp, name: it.name, cat: it.cat, qty: it.qty });
+        }
+        o.packDoneBoxes.push({
+          no: xy + '-' + bi, warehouse: wh, itemList: itemList,
+          packNames: ['装箱_箱' + bi + '.jpg'], sealNames: ['封箱_箱' + bi + '.jpg']
+        });
+      }
+    }
     orderPackages.push(o);
   }
   // 异常演示数据
@@ -873,6 +957,18 @@ function seedData() {
       packDoneReason:'已按要求完成打包', packItems:[
         { name:'棉质T恤', qty:2, cat:'普货' },{ name:'运动鞋', qty:1, cat:'普货' },
         { name:'数据线', qty:5, cat:'普货' },{ name:'充电宝', qty:1, cat:'敏货' }
+      ],
+      packDoneBoxes: [
+        { no:'XY202608'+String(dd).padStart(2,'0')+'DON'+(da+1)+'-1', warehouse:'青源仓',
+          itemList:[
+            { express:'SF123'+String(1000000000+da*3+1), name:'棉质T恤', cat:'普货', qty:2 },
+            { express:'SF123'+String(1000000000+da*3+1), name:'运动鞋', cat:'普货', qty:1 }
+          ], packNames:['装箱_箱1.jpg'], sealNames:['封箱_箱1.jpg'] },
+        { no:'XY202608'+String(dd).padStart(2,'0')+'DON'+(da+1)+'-2', warehouse:(da%2?'派力仓':'青源仓'),
+          itemList:[
+            { express:'SF123'+String(1000000000+da*3+2), name:'数据线', cat:'普货', qty:5 },
+            { express:'SF123'+String(1000000000+da*3+3), name:'充电宝', cat:'敏货', qty:1 }
+          ], packNames:['装箱_箱2.jpg'], sealNames:['封箱_箱2.jpg'] }
       ]
     });
   }
@@ -959,6 +1055,34 @@ function seedData() {
       void:true, voidAt:vct, voidOperator:'张三', voidReason:'客户取消订单'
     });
   }
+
+  // 兜底：所有「打包中」「打包完成」订单补箱号清单演示数据（最少 5 箱）
+  var demoItems = [
+    { name:'棉质T恤', cat:'普货', qty:2 }, { name:'运动鞋', cat:'普货', qty:1 },
+    { name:'书籍杂志', cat:'普货', qty:3 }, { name:'数据线', cat:'普货', qty:5 },
+    { name:'充电宝', cat:'敏货', qty:1 }, { name:'陶瓷餐具', cat:'普货', qty:2 },
+    { name:'香水', cat:'敏货', qty:1 }, { name:'桌面摆件', cat:'普货', qty:1 }
+  ];
+  orderPackages.forEach(function(o, idx){
+    if (o.status !== '打包中' && o.status !== '打包完成') return;
+    if (o.packDoneBoxes && o.packDoneBoxes.length) return;
+    o.packDoneBoxes = [];
+    var base = (o.xy || o.code || 'XY');
+    for (var bi = 1; bi <= 5; bi++) {
+      var wh = (bi % 2 === 0) ? '派力仓' : '青源仓';
+      var itCnt = 1 + (bi % 3);
+      var itemList = [];
+      for (var k = 0; k < itCnt; k++) {
+        var it = demoItems[(idx + bi + k) % demoItems.length];
+        var exp = 'SF123' + String(3000000000 + idx * 11 + bi * 3 + k);
+        itemList.push({ express: exp, name: it.name, cat: it.cat, qty: it.qty });
+      }
+      o.packDoneBoxes.push({
+        no: base + '-' + bi, warehouse: wh, itemList: itemList,
+        packNames: ['装箱_箱' + bi + '.jpg'], sealNames: ['封箱_箱' + bi + '.jpg']
+      });
+    }
+  });
 }
 var orderReturns = [];
 function seedReturns() {
@@ -1713,7 +1837,12 @@ var packBoxPool = [];          // 可选物品池 [{image,express,items:[{name,c
 var packBoxPicked = {};        // 当前编辑箱的勾选状态 { 'gi:ii': true }
 var packBoxCollapsed = {};     // 分组折叠状态
 var packBoxEditing = -1;       // -1=新增；>=0=编辑已有箱
-var packBoxTmp = { pack:{files:[],urls:[],names:[]}, seal:{files:[],urls:[],names:[]} };
+var packBoxTmp = { pack:{files:[],urls:[],names:[]}, seal:{files:[],urls:[],names:[]}, doc:{files:[],urls:[],names:[]} };
+var packBoxItemsText = '';     // 录入物品装箱（逗号分隔文本）
+var packBoxSavedItems = [];    // 保存的录入物品（暂存）
+var packBoxAiRefPicked = {};   // AI识别物品参照勾选状态 { name: true }
+var packBoxAiRefKw = '';       // AI识别物品参照筛选关键字
+var packBoxAiRefFilter = '全部'; // AI识别物品参照装箱状态筛选：全部/未装箱/已装箱
 var PACK_BOX_WAREHOUSES = ['青源仓','派力仓'];
 
 function h5PackBoxNoOf(o, n) {
@@ -1727,7 +1856,8 @@ function cloneH5PackBox(b) {
     picks: Object.assign({}, b.picks || {}),
     itemList: (b.itemList || []).map(function(x){ return { express:x.express, name:x.name, cat:x.cat, qty:x.qty }; }),
     packFiles:(b.packFiles||[]).slice(), packUrls:(b.packUrls||[]).slice(), packNames:(b.packNames||[]).slice(),
-    sealFiles:(b.sealFiles||[]).slice(), sealUrls:(b.sealUrls||[]).slice(), sealNames:(b.sealNames||[]).slice()
+    sealFiles:(b.sealFiles||[]).slice(), sealUrls:(b.sealUrls||[]).slice(), sealNames:(b.sealNames||[]).slice(),
+    docFiles:(b.docFiles||[]).slice(), docUrls:(b.docUrls||[]).slice(), docNames:(b.docNames||[]).slice()
   };
 }
 
@@ -1777,17 +1907,39 @@ function removePackDoneBox(i) {
 }
 
 // ---- 选择装箱物品（二级弹框） ----
+// AI识别物品参照演示数据（100 项，[名称, 属性, 数量]）
+function demoPackBoxItems() {
+  var raw = [
+    ['棉质T恤','普货',2],['衬衫','普货',1],['牛仔裤','普货',1],['连衣裙','普货',1],['毛衣','普货',1],
+    ['卫衣','普货',2],['羽绒服','普货',1],['风衣','普货',1],['西装外套','普货',1],['运动短裤','普货',2],
+    ['休闲长裤','普货',1],['袜子','普货',5],['内衣套装','普货',2],['围巾','普货',1],['针织帽','普货',1],
+    ['棒球帽','普货',1],['皮手套','普货',1],['运动鞋','普货',2],['皮鞋','普货',1],['凉鞋','普货',1],
+    ['拖鞋','普货',2],['马丁靴','普货',1],['双肩包','普货',1],['手提包','普货',1],['行李箱','普货',1],
+    ['钱包','普货',1],['腰带','普货',1],['毛巾','普货',3],['浴巾','普货',2],['牙刷','普货',3],
+    ['牙膏','敏货',2],['洗发水','敏货',1],['沐浴露','敏货',1],['洗衣液','敏货',1],['衣架','普货',10],
+    ['收纳盒','普货',3],['抽纸','普货',5],['水杯','普货',1],['保温杯','普货',1],['陶瓷餐具','普货',4],
+    ['厨房刀具','禁运',1],['充电宝','敏货',1],['数据线','普货',3],['无线耳机','敏货',1],['蓝牙音箱','侵权',1],
+    ['手机壳','普货',2],['平板支架','普货',1],['机械键盘','普货',1],['无线鼠标','敏货',1],['U盘','普货',2],
+    ['移动硬盘','敏货',1],['充电器','敏货',2],['台灯','普货',1],['床单','普货',1],['被套','普货',1],
+    ['枕头','普货',2],['毛毯','普货',1],['窗帘','普货',1],['桌布','普货',1],['坐垫','普货',1],
+    ['挂钩','普货',5],['置物架','普货',1],['花盆','普货',2],['笔记本','普货',3],['钢笔','普货',2],
+    ['文具盒','普货',1],['积木玩具','普货',1],['拼图','普货',1],['毛绒玩具','普货',1],['遥控车','敏货',1],
+    ['瑜伽垫','普货',1],['哑铃','普货',2],['跳绳','普货',1],['护膝','普货',2],['运动水壶','普货',1],
+    ['香水','侵权',1],['口红','侵权',2],['粉底液','敏货',1],['面膜','敏货',5],['洗面奶','敏货',1],
+    ['化妆刷','普货',3],['茶叶','普货',2],['坚果','普货',3],['零食大礼包','普货',2],['调味料','普货',2],
+    ['速溶咖啡','普货',2],['锅具','普货',1],['碗碟套装','普货',4],['保鲜盒','普货',3],['砧板','普货',1],
+    ['雨伞','普货',1],['太阳镜','侵权',1],['手表','侵权',1],['首饰盒','普货',1],['闹钟','普货',1],
+    ['相框','普货',2],['装饰画','侵权',1],['抱枕','普货',2],['吸顶灯','普货',1],['电子烟','禁运',1]
+  ];
+  return raw.map(function(r, i){
+    return { name: r[0], cat: r[1], qty: r[2], photo: 'IMG_' + String((i % 20) + 1).padStart(3, '0') + '.jpg' };
+  });
+}
 function buildPackBoxPool(o) {
   var out = [], seen = {};
   var items = (o && o.packItems) || [];
   if (!items.length) {
-    items = [
-      { name:'棉质T恤', qty:2, cat:'普货', photo:'IMG_001.jpg' },
-      { name:'运动短裤', qty:1, cat:'普货', photo:'IMG_001.jpg' },
-      { name:'充电宝', qty:1, cat:'敏货', photo:'IMG_001.jpg' },
-      { name:'陶瓷餐具', qty:1, cat:'普货', photo:'IMG_002.jpg' },
-      { name:'运动鞋', qty:2, cat:'普货', photo:'IMG_002.jpg' }
-    ];
+    items = demoPackBoxItems();
   }
   items.forEach(function(it){
     var g = it.photo || it.image || '未分组';
@@ -1802,7 +1954,7 @@ function openPackBoxModal(idx) {
   packBoxEditing = (typeof idx === 'number') ? idx : -1;
   packBoxPool = buildPackBoxPool(o);
   packBoxCollapsed = {};
-  packBoxTmp = { pack:{files:[],urls:[],names:[]}, seal:{files:[],urls:[],names:[]} };
+  packBoxTmp = { pack:{files:[],urls:[],names:[]}, seal:{files:[],urls:[],names:[]}, doc:{files:[],urls:[],names:[]} };
   var b = (packBoxEditing >= 0) ? packDoneBoxes[packBoxEditing] : null;
   if (b) {
     packBoxPicked = Object.assign({}, b.picks || {});
@@ -1812,16 +1964,28 @@ function openPackBoxModal(idx) {
     packBoxTmp.seal.files = (b.sealFiles||[]).slice();
     packBoxTmp.seal.urls = (b.sealUrls||[]).slice();
     packBoxTmp.seal.names = (b.sealNames||[]).slice();
-    document.getElementById('packBoxNo').value = b.no || h5PackBoxNoOf(o, packBoxEditing + 1);
+    packBoxTmp.doc.files = (b.docFiles||[]).slice();
+    packBoxTmp.doc.urls = (b.docUrls||[]).slice();
+    packBoxTmp.doc.names = (b.docNames||[]).slice();
+    document.getElementById('packBoxNo').textContent = b.no || h5PackBoxNoOf(o, packBoxEditing + 1);
     setPackBoxWarehouse(b.warehouse || PACK_BOX_WAREHOUSES[0]);
   } else {
     packBoxPicked = {};
-    document.getElementById('packBoxNo').value = h5PackBoxNoOf(o, packDoneBoxes.length + 1);
+    document.getElementById('packBoxNo').textContent = h5PackBoxNoOf(o, packDoneBoxes.length + 1);
     setPackBoxWarehouse(PACK_BOX_WAREHOUSES[0]);
   }
-  var s = document.getElementById('packBoxSearch'); if (s) s.value = '';
+  // 回填录入物品文本框（编辑已有箱时）
+  packBoxItemsText = '';
+  packBoxSavedItems = [];
+  packBoxAiRefPicked = {};
+  packBoxAiRefKw = '';
+  packBoxAiRefFilter = '全部';
+  var _aiSearch = document.getElementById('packBoxAiRefSearch'); if (_aiSearch) _aiSearch.value = '';
+  if (b) packBoxItemsText = (b.itemList || []).map(function(x){ return x.name; }).join('，');
   renderPackBoxPhotoArea();
-  renderPackBoxPool();
+  renderPackBoxDocArea();
+  renderPackBoxAiRef();
+  syncPackBoxItemsInput();
   document.getElementById('packBoxItemModal').classList.add('show');
 }
 function closePackBoxModal() {
@@ -1876,6 +2040,51 @@ function removePackBoxPhoto(kind, i) {
   if (i < t.urls.length) { t.files.splice(i, 1); t.urls.splice(i, 1); }
   else { t.names.splice(i - t.urls.length, 1); }
   renderPackBoxPhotoArea();
+}
+// 物品单（选填）
+function renderPackBoxDocArea() {
+  var wrap = document.getElementById('packBoxPrev_doc');
+  if (!wrap) return;
+  var t = packBoxTmp.doc;
+  if (!t.urls.length && !t.names.length) { wrap.innerHTML = ''; return; }
+  var html = '';
+  t.urls.forEach(function(u, i){
+    html += '<span style="position:relative;display:inline-flex;">' +
+      (u ? '<img src="' + u + '" style="width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border);display:block;">'
+         : '<span style="width:52px;height:52px;border-radius:6px;border:1px solid var(--border);background:#F1F5F9;display:block;"></span>') +
+      '<span onclick="removePackBoxDocPhoto(' + i + ')" title="删除" style="position:absolute;right:-5px;top:-5px;width:15px;height:15px;border-radius:50%;background:var(--danger);color:#fff;font-size:11px;line-height:15px;text-align:center;cursor:pointer;">×</span></span>';
+  });
+  var off = t.urls.length;
+  t.names.forEach(function(n, i){
+    html += '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;background:#F3F4F6;border:1px solid #F3F4F6;border-radius:12px;font-size:11px;color:#374151;max-width:150px;">' +
+      '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + n + '</span>' +
+      '<span onclick="removePackBoxDocPhoto(' + (off + i) + ')" style="cursor:pointer;color:var(--text-secondary);font-weight:700;line-height:1;" title="删除">×</span></span>';
+  });
+  wrap.innerHTML = html;
+}
+function onPackBoxDocFileChange(e) {
+  var t = packBoxTmp.doc;
+  if (!t || !e || !e.target || !e.target.files) return;
+  for (var k = 0; k < e.target.files.length; k++) {
+    var f = e.target.files[k];
+    t.files.push(f);
+    try { t.urls.push(URL.createObjectURL(f)); } catch (err) { t.urls.push(''); }
+  }
+  e.target.value = '';
+  renderPackBoxDocArea();
+}
+function removePackBoxDocPhoto(i) {
+  var t = packBoxTmp.doc;
+  if (!t) return;
+  if (i < t.urls.length) { t.files.splice(i, 1); t.urls.splice(i, 1); }
+  else { t.names.splice(i - t.urls.length, 1); }
+  renderPackBoxDocArea();
+}
+function saveBoxItems() {
+  var items = buildBoxItemListFromText();
+  if (!items.length) { alert('请先录入物品'); return; }
+  packBoxSavedItems = items;
+  showToast('已保存 ' + items.length + ' 项物品');
 }
 function togglePackBoxGroup(gi) {
   packBoxCollapsed[gi] = !packBoxCollapsed[gi];
@@ -1934,33 +2143,210 @@ function confirmPackBox() {
   var o = orderPackages.find(function(p){ return p.id===packDoneId; });
   if (!o) return;
   var noEl = document.getElementById('packBoxNo');
-  var no = ((noEl && noEl.value) ? noEl.value : '').trim();
-  if (!no) { alert('请输入箱号'); return; }
+  var no = ((noEl && noEl.textContent) ? noEl.textContent : '').trim();
+  if (!no) { alert('箱号缺失'); return; }
   var dup = false;
   packDoneBoxes.forEach(function(b, i){ if (b.no === no && i !== packBoxEditing) dup = true; });
   if (dup) { alert('箱号 ' + no + ' 已存在，请更换箱号'); return; }
   if (!packBoxTmp.pack.urls.length && !packBoxTmp.pack.names.length) { alert('请上传装箱图片'); return; }
   if (!packBoxTmp.seal.urls.length && !packBoxTmp.seal.names.length) { alert('请上传封箱图片'); return; }
-  var itemList = [];
-  packBoxPool.forEach(function(g, gi){
-    g.items.forEach(function(it, ii){
-      if (packBoxPicked[gi + ':' + ii]) itemList.push({ express: g.express, name: it.name, cat: it.cat, qty: it.qty });
-    });
-  });
-  if (!itemList.length) { alert('请至少勾选一个物品'); return; }
+  var itemList = buildBoxItemListFromText();
+  if (!itemList.length) { alert('请输入装箱物品'); return; }
   var rec = {
     no: no,
     warehouse: getPackBoxWarehouse(),
     picks: Object.assign({}, packBoxPicked),
     itemList: itemList,
     packFiles: packBoxTmp.pack.files.slice(), packUrls: packBoxTmp.pack.urls.slice(), packNames: packBoxTmp.pack.names.slice(),
-    sealFiles: packBoxTmp.seal.files.slice(), sealUrls: packBoxTmp.seal.urls.slice(), sealNames: packBoxTmp.seal.names.slice()
+    sealFiles: packBoxTmp.seal.files.slice(), sealUrls: packBoxTmp.seal.urls.slice(), sealNames: packBoxTmp.seal.names.slice(),
+    docFiles: packBoxTmp.doc.files.slice(), docUrls: packBoxTmp.doc.urls.slice(), docNames: packBoxTmp.doc.names.slice()
   };
   if (packBoxEditing >= 0) packDoneBoxes[packBoxEditing] = rec;
   else packDoneBoxes.push(rec);
   closePackBoxModal();
   renderPackDoneBoxList();
   showToast('箱号 ' + no + ' 已装箱 ' + itemList.length + ' 项物品');
+}
+
+// ---- 录入物品装箱：文字输入 + 语音 + AI识别参照 ----
+function syncPackBoxItemsInput() {
+  var el = document.getElementById('packBoxItemsInput');
+  if (el) el.value = packBoxItemsText;
+}
+function onPackBoxItemsInput(v) {
+  packBoxItemsText = v || '';
+  updatePackBoxAiRefHint();
+  if (packBoxAiRefFilter !== '全部') renderPackBoxAiRef();
+}
+function parseBoxItemsText(text) {
+  var seen = {}, out = [];
+  (text || '').split(/[,，、\n;；]/).forEach(function(s){
+    s = (s || '').trim();
+    if (s && !seen[s]) { seen[s] = true; out.push(s); }
+  });
+  return out;
+}
+// 把录入文本解析成 itemList（优先匹配 AI 池里的属性/数量/快递单号）
+function buildBoxItemListFromText() {
+  var names = parseBoxItemsText(packBoxItemsText);
+  if (!names.length) return [];
+  var nameMap = {};
+  packBoxPool.forEach(function(g){
+    g.items.forEach(function(it){ if (!nameMap[it.name]) nameMap[it.name] = { express: g.express, cat: it.cat, qty: it.qty }; });
+  });
+  return names.map(function(n){
+    var m = nameMap[n];
+    return { express: m ? m.express : '', name: n, cat: m ? m.cat : '普货', qty: m ? m.qty : 1 };
+  });
+}
+function startVoiceBoxItems() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert('当前浏览器不支持语音识别，请使用 Chrome'); return; }
+  var rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  rec.lang = 'zh-CN'; rec.interimResults = false;
+  rec.onresult = function(e) {
+    var t = ((e.results[0][0].transcript) || '').trim();
+    if (!t) return;
+    packBoxItemsText = (packBoxItemsText ? packBoxItemsText.replace(/[，,、\s]+$/, '') + '，' : '') + t;
+    syncPackBoxItemsInput();
+  };
+  rec.onerror = function() { alert('语音识别失败，请重试'); };
+  rec.start(); showToast('正在聆听…');
+}
+function packBoxAiRefNames() {
+  var seen = {}, out = [];
+  packBoxPool.forEach(function(g){
+    g.items.forEach(function(it){
+      if (!seen[it.name]) { seen[it.name] = true; out.push({ name: it.name, cat: it.cat, qty: it.qty }); }
+    });
+  });
+  return out;
+}
+// 属性简称与配色（普/敏/侵/禁）
+function packAttrShort(cat) {
+  var m = { '普货':'普', '敏货':'敏', '侵权':'侵', '禁运':'禁' };
+  return m[cat] || (cat ? cat.charAt(0) : '普');
+}
+function packAttrColor(cat) {
+  if (cat === '敏货') return { bg:'#FEF2F2', fg:'#DC2626', bd:'#FECACA' };
+  if (cat === '侵权') return { bg:'#FFF7ED', fg:'#EA580C', bd:'#FED7AA' };
+  if (cat === '禁运') return { bg:'#F3F4F6', fg:'#6B7280', bd:'#E5E7EB' };
+  return { bg:'#ECFDF5', fg:'#15803D', bd:'#BBF7D0' };
+}
+// 已录入(装箱)物品名集合
+function packBoxAiRefBoxedSet() {
+  var set = {};
+  parseBoxItemsText(packBoxItemsText).forEach(function(n){ set[n] = true; });
+  return set;
+}
+// 筛选后的可见参照列表
+function packBoxAiRefVisible() {
+  var kw = (packBoxAiRefKw || '').trim().toLowerCase();
+  var boxed = packBoxAiRefBoxedSet();
+  return packBoxAiRefNames().filter(function(it){
+    if (kw) {
+      var hit = it.name.toLowerCase().indexOf(kw) >= 0 || packAttrShort(it.cat).indexOf(kw) >= 0 || it.cat.indexOf(kw) >= 0;
+      if (!hit) return false;
+    }
+    if (packBoxAiRefFilter === '未装箱') return !boxed[it.name];
+    if (packBoxAiRefFilter === '已装箱') return !!boxed[it.name];
+    return true;
+  });
+}
+function onPackBoxAiRefSearch(v) {
+  packBoxAiRefKw = v || '';
+  renderPackBoxAiRef();
+}
+// 装箱状态筛选栏（全部/未装箱/已装箱）
+function renderPackBoxAiRefFilterBar() {
+  var bar = document.getElementById('packBoxAiRefFilterBar');
+  if (!bar) return;
+  var total = packBoxAiRefNames().length;
+  var boxed = Object.keys(packBoxAiRefBoxedSet()).length;
+  var unboxed = Math.max(0, total - boxed);
+  var counts = { '全部': total, '未装箱': unboxed, '已装箱': boxed };
+  var opts = ['全部', '未装箱', '已装箱'];
+  var cur = opts.indexOf(packBoxAiRefFilter) >= 0 ? packBoxAiRefFilter : '全部';
+  bar.innerHTML = '<select id="packBoxAiRefFilterSel" onchange="onPackBoxAiRefFilter(this.value)" title="按装箱状态筛选" style="padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;outline:none;background:var(--card);color:var(--text);cursor:pointer;height:32px;box-sizing:border-box;">' +
+    opts.map(function(f){
+      return '<option value="' + f + '"' + (cur === f ? ' selected' : '') + '>' + f + '（' + counts[f] + '）</option>';
+    }).join('') +
+  '</select>';
+}
+function onPackBoxAiRefFilter(v) {
+  packBoxAiRefFilter = v;
+  renderPackBoxAiRefFilterBar();
+  renderPackBoxAiRef();
+}
+function updatePackBoxAiRefHint() {
+  var el = document.getElementById('packBoxAiRefHint');
+  if (!el) return;
+  var total = packBoxAiRefNames().length;
+  var boxed = Object.keys(packBoxAiRefBoxedSet()).length;
+  var unboxed = total - boxed;
+  el.innerHTML = unboxed > 0
+    ? '您还有 <b style="color:#DC2626;">' + unboxed + '</b> 个物品未装箱'
+    : '物品已全部装箱';
+}
+function renderPackBoxAiRef() {
+  var wrap = document.getElementById('packBoxAiRef');
+  if (!wrap) return;
+  renderPackBoxAiRefFilterBar();
+  updatePackBoxAiRefHint();
+  var names = packBoxAiRefVisible();
+  if (!names.length) {
+    var tip = packBoxAiRefNames().length ? '无匹配物品' : '暂无AI识别物品';
+    wrap.innerHTML = '<div style="text-align:center;color:var(--text-secondary);font-size:12px;padding:18px;border:1px dashed var(--border);border-radius:8px;">' + tip + '</div>';
+    updatePackBoxAiRefBtns(0, 0);
+    return;
+  }
+  var picked = names.filter(function(it){ return packBoxAiRefPicked[it.name]; }).length;
+  var html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">';
+  names.forEach(function(it){
+    var c = packAttrColor(it.cat);
+    var on = !!packBoxAiRefPicked[it.name];
+    var titleSafe = it.name.replace(/"/g, '&quot;');
+    html += '<label title="' + titleSafe + '"  style="display:flex;align-items:center;gap:4px;padding:4px 6px;border-radius:6px;font-size:12px;cursor:pointer;margin:0;min-width:0;background:' + (on ? '#E0F2FE' : c.bg) + ';border:1px solid ' + (on ? '#1D4ED8' : c.bd) + ';">' +
+      '<input type="checkbox" ' + (on ? 'checked' : '') + ' onclick="event.stopPropagation();togglePackBoxAiRef(\'' + it.name.replace(/'/g, "\\'") + '\')" style="cursor:pointer;margin:0;width:13px;height:13px;padding:0;flex-shrink:0;accent-color:#1D4ED8;">' +
+      '<span style="color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + it.name + '</span>' +
+      '<span style="flex-shrink:0;min-width:16px;height:16px;line-height:16px;text-align:center;border-radius:4px;font-size:10px;font-weight:600;background:' + c.fg + ';color:#fff;">' + packAttrShort(it.cat) + '</span>' +
+      '<span style="flex-shrink:0;font-size:10px;color:var(--text-secondary);min-width:10px;text-align:center;">' + it.qty + '</span></label>';
+  });
+  html += '</div>';
+  wrap.innerHTML = html;
+  updatePackBoxAiRefBtns(names.length, picked);
+}
+function updatePackBoxAiRefBtns(total, picked) {
+  var importBtn = document.getElementById('packBoxAiRefImportBtn');
+  if (importBtn) {
+    importBtn.innerHTML = picked ? ('导入选中(' + picked + ')') : '一键导入';
+  }
+  var allBtn = document.getElementById('packBoxAiRefAllBtn');
+  if (allBtn) allBtn.textContent = (total && picked === total) ? '取消全选' : '全选';
+}
+function togglePackBoxAiRef(name) {
+  if (packBoxAiRefPicked[name]) delete packBoxAiRefPicked[name];
+  else packBoxAiRefPicked[name] = true;
+  renderPackBoxAiRef();
+}
+function togglePackBoxAiRefAll() {
+  var names = packBoxAiRefVisible();
+  var all = names.length && names.every(function(it){ return packBoxAiRefPicked[it.name]; });
+  if (all) { names.forEach(function(it){ delete packBoxAiRefPicked[it.name]; }); }
+  else names.forEach(function(it){ packBoxAiRefPicked[it.name] = true; });
+  renderPackBoxAiRef();
+}
+function importPackBoxAiRef() {
+  var names = packBoxAiRefVisible().map(function(it){ return it.name; });
+  if (!names.length) { alert('暂无AI识别物品可导入'); return; }
+  var picked = names.filter(function(n){ return packBoxAiRefPicked[n]; });
+  var toImport = picked.length ? picked : names;  // 无勾选则导入可见全部
+  var cur = parseBoxItemsText(packBoxItemsText);
+  var merged = cur.slice();
+  toImport.forEach(function(n){ if (merged.indexOf(n) < 0) merged.push(n); });
+  packBoxItemsText = merged.join('，');
+  syncPackBoxItemsInput();
+  renderPackBoxAiRef();
+  showToast('已导入 ' + toImport.length + ' 项AI识别物品');
 }
 
 function startVoicePackDone() {
@@ -2108,7 +2494,7 @@ function showPackDetail(id) {
   // Tab bar
   h += '<div style="display:flex;gap:0;margin-bottom:12px;background:var(--border);border-radius:8px;padding:3px;">'+
     '<div class="pack-detail-tab active" onclick="switchPackDetailTab(\'demand\',this)">打包要求</div>'+
-    '<div class="pack-detail-tab" onclick="switchPackDetailTab(\'package\',this)">包裹清单</div>'+
+    '<div class="pack-detail-tab" onclick="switchPackDetailTab(\'package\',this)">货品清单</div>'+
     '<div class="pack-detail-tab" onclick="switchPackDetailTab(\'flow\',this)">订单流转</div>'+
     '<div class="pack-detail-tab" onclick="switchPackDetailTab(\'log\',this)">操作记录</div>'+
     '</div>';
@@ -2134,8 +2520,15 @@ function showPackDetail(id) {
   h += demand;
   h += '</div>';
 
-  // ===== Tab 包裹清单：AI识别物品清单（原位于打包要求内，独立成 tab） =====
+  // ===== Tab 货品清单：包裹清单 + 箱号清单 两个子 tab =====
   h += '<div id="pdTabPackage" class="pd-tab-content" style="display:none;">';
+  // 子 tab 栏
+  h += '<div class="pd-pkg-subbar" style="display:flex;gap:6px;margin-bottom:12px;background:#F3F4F6;border-radius:8px;padding:3px;">';
+  h += '<span class="pd-pkg-subtab active" onclick="switchPdPkgSubTab(\'item\',this)">包裹清单</span>';
+  h += '<span class="pd-pkg-subtab" onclick="switchPdPkgSubTab(\'box\',this)">箱号清单</span>';
+  h += '</div>';
+  // 包裹清单子面板
+  h += '<div class="pd-pkg-sub" data-pkgsub="item" style="display:block;">';
   // 物品属性（AI识别结果）—— 按桌面图重构：图片分组表格 + 修改弹窗
   if (o.status === '打包中' || o.status === '待打包' || o.status === '打包待审核' || o.status === '完成待审核' || o.status === '待质检' || o.status === '质检中' || o.status === '打包完毕' || o.status === '审核' || (o.packItems && o.packItems.length)) {
     if (!o.packItems || !o.packItems.length) {
@@ -2199,7 +2592,12 @@ function showPackDetail(id) {
 
     h += '</div>';
   }
+  h += '</div>';  // 关闭 包裹清单子面板
+  // 箱号清单子面板
+  h += '<div class="pd-pkg-sub" data-pkgsub="box" style="display:none;">';
+  h += '<div id="pdPkgBoxList_'+o.id+'"></div>';
   h += '</div>';
+  h += '</div>';  // 关闭 pdTabPackage
 
   // ===== Tab 2: 订单流转 =====
   h += '<div id="pdTabFlow" class="pd-tab-content" style="display:none;">';
@@ -2329,7 +2727,7 @@ function showPackDetail(id) {
   h += '</div>';
 
   // Add tab CSS
-  h += '<style>.pack-detail-tab{flex:1;text-align:center;padding:7px 0;font-size:13px;font-weight:500;border-radius:6px;cursor:pointer;color:var(--text-secondary);}.pack-detail-tab.active{background:var(--card);color:var(--primary);box-shadow:var(--shadow-sm);}.pd-tab-content{animation:fadeIn 0.2s ease;}.pd-flow-subtab{flex:1;text-align:center;padding:6px 0;font-size:12px;border-radius:6px;cursor:pointer;color:var(--text-secondary);font-weight:500;}.pd-flow-subtab.active{background:var(--card);color:var(--primary);font-weight:600;box-shadow:var(--shadow-sm);}.pd-xylog-tab{padding:4px 12px;font-size:12px;border-radius:6px;cursor:pointer;color:var(--text-secondary);font-weight:500;}.pd-xylog-tab.active{background:var(--primary);color:#fff;font-weight:600;}</style>';
+  h += '<style>.pack-detail-tab{flex:1;text-align:center;padding:7px 0;font-size:13px;font-weight:500;border-radius:6px;cursor:pointer;color:var(--text-secondary);}.pack-detail-tab.active{background:var(--card);color:var(--primary);box-shadow:var(--shadow-sm);}.pd-tab-content{animation:fadeIn 0.2s ease;}.pd-flow-subtab{flex:1;text-align:center;padding:6px 0;font-size:12px;border-radius:6px;cursor:pointer;color:var(--text-secondary);font-weight:500;}.pd-flow-subtab.active{background:var(--card);color:var(--primary);font-weight:600;box-shadow:var(--shadow-sm);}.pd-xylog-tab{padding:4px 12px;font-size:12px;border-radius:6px;cursor:pointer;color:var(--text-secondary);font-weight:500;}.pd-xylog-tab.active{background:var(--primary);color:#fff;font-weight:600;}.pd-pkg-subtab{flex:1;text-align:center;padding:6px 0;font-size:12px;border-radius:6px;cursor:pointer;color:var(--text-secondary);font-weight:500;}.pd-pkg-subtab.active{background:var(--card);color:var(--primary);font-weight:600;box-shadow:var(--shadow-sm);}</style>';
 
   document.getElementById('packDetailContent').innerHTML = h;
   // 渲染包裹清单分类 tab 与图片组
@@ -2339,6 +2737,8 @@ function showPackDetail(id) {
     renderPdPkgTabBar(o);
     renderPdPkgGroups(o);
   }
+  // 渲染箱号清单
+  renderPdBoxList(o);
   var disabled = o.status==='异常'||o.status==='已作废'||o.status==='打包待审核'||o.status==='完成待审核';
   document.getElementById('packDetailDoneBtn').style.display = disabled?'none':'';
   document.getElementById('packDetailExBtn').style.display = (o.status==='打包中')?'':'none';
@@ -2544,6 +2944,127 @@ function switchPackDetailTab(tab, el) {
   document.getElementById('pdTabPackage').style.display = tab==='package'?'block':'none';
   document.getElementById('pdTabFlow').style.display = tab==='flow'?'block':'none';
   document.getElementById('pdTabLog').style.display = tab==='log'?'block':'none';
+}
+// 货品清单子 tab 切换：包裹清单 / 箱号清单
+function switchPdPkgSubTab(sub, el) {
+  var wrap = document.getElementById('pdTabPackage');
+  if (!wrap) return;
+  wrap.querySelectorAll('.pd-pkg-subtab').forEach(function(t){ t.classList.remove('active'); });
+  if (el) el.classList.add('active');
+  wrap.querySelectorAll('.pd-pkg-sub').forEach(function(p){ p.style.display = (p.getAttribute('data-pkgsub')===sub) ? 'block' : 'none'; });
+}
+// 箱号清单：箱号 / 物品数 / 包裹数 / 所属仓库 / 装箱图 / 封箱图
+function renderPdBoxList(o) {
+  var el = document.getElementById('pdPkgBoxList_' + o.id);
+  if (!el) return;
+  var boxes = o.packDoneBoxes || o.packStartBoxes || [];
+  var h = '';
+  if (!boxes.length) {
+    h = '<div style="text-align:center;color:var(--text-secondary);font-size:12px;padding:28px 0;border:1px dashed var(--border);border-radius:10px;">暂无箱号清单</div>';
+    el.innerHTML = h;
+    return;
+  }
+  // 表头
+  h += '<div style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:#F8FAFC;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-secondary);font-weight:600;">' +
+    '<span style="flex:1.2;min-width:0;">箱号</span>' +
+    '<span style="flex:0.7;text-align:center;">物品数</span>' +
+    '<span style="flex:0.7;text-align:center;">包裹数</span>' +
+    '<span style="flex:0.8;text-align:center;">所属仓库</span>' +
+    '<span style="flex:1.1;text-align:center;">装箱图</span>' +
+    '<span style="flex:1.1;text-align:center;">封箱图</span>' +
+  '</div>';
+  boxes.forEach(function(b, bi){
+    var itemCnt = (b.itemList || []).length;
+    // 包裹数 = itemList 里去重 express（快递单号）数量
+    var expSet = {};
+    (b.itemList || []).forEach(function(it){ if (it.express) expSet[it.express] = 1; });
+    var parcelCnt = Object.keys(expSet).length || (b.packFiles && b.packFiles.length) || 1;
+    var packImgs = (b.packUrls || []).length + (b.packNames || []).length;
+    var sealImgs = (b.sealUrls || []).length + (b.sealNames || []).length;
+    h += '<div style="display:flex;align-items:center;gap:6px;padding:9px 10px;border-bottom:1px solid #F3F4F6;font-size:12px;">' +
+      '<span style="flex:1.2;min-width:0;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (b.no || '—') + '</span>' +
+      '<span onclick="showPdBoxItems(' + o.id + ',' + bi + ')" style="flex:0.7;text-align:center;color:#1D4ED8;cursor:pointer;text-decoration:underline;font-weight:600;">' + itemCnt + '</span>' +
+      '<span onclick="showPdBoxParcels(' + o.id + ',' + bi + ')" style="flex:0.7;text-align:center;color:#1D4ED8;cursor:pointer;text-decoration:underline;font-weight:600;">' + parcelCnt + '</span>' +
+      '<span style="flex:0.8;text-align:center;">' +
+        '<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;' + (b.warehouse==='派力仓' ? 'background:#FFF7ED;color:#EA580C;' : 'background:#ECFDF5;color:#166534;') + '">' + (b.warehouse || '青源仓') + '</span>' +
+      '</span>' +
+      '<span style="flex:1.1;text-align:center;color:' + (packImgs ? '#16A34A' : 'var(--text-secondary)') + ';">' + (packImgs ? '✓ ' + packImgs + ' 张' : '—') + '</span>' +
+      '<span style="flex:1.1;text-align:center;color:' + (sealImgs ? '#16A34A' : 'var(--text-secondary)') + ';">' + (sealImgs ? '✓ ' + sealImgs + ' 张' : '—') + '</span>' +
+    '</div>';
+  });
+  h = '<div style="background:var(--card);border-radius:12px;border:1px solid var(--border);overflow:hidden;">' + h + '</div>';
+  el.innerHTML = h;
+}
+// 点「物品数」→ 该箱的物品明细弹框
+function showPdBoxItems(oid, bi) {
+  var o = orderPackages.find(function(p){ return p.id === oid; });
+  if (!o) return;
+  var boxes = o.packDoneBoxes || o.packStartBoxes || [];
+  var b = boxes[bi];
+  if (!b) return;
+  var list = b.itemList || [];
+  var qty = list.reduce(function(a, it){ return a + (it.qty || 1); }, 0);
+  var rows = list.map(function(it, i){
+    return '<div style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid #F3F4F6;font-size:12px;">' +
+      '<span style="width:32px;color:var(--text-secondary);flex-shrink:0;">' + (i + 1) + '</span>' +
+      '<span style="flex:1;min-width:0;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (it.name || '—') + '</span>' +
+      '<span style="flex:0.9;min-width:0;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;">' + (it.express || '—') + '</span>' +
+      '<span style="width:44px;text-align:center;color:var(--text);">' + (it.qty || 1) + '</span>' +
+      '<span style="width:44px;text-align:center;">' +
+        '<span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;' + (it.cat==='敏货' ? 'background:#FEF2F2;color:#DC2626;' : 'background:#ECFDF5;color:#166534;') + '">' + (it.cat || '普货') + '</span>' +
+      '</span>' +
+    '</div>';
+  }).join('') || '<div style="text-align:center;color:var(--text-secondary);font-size:12px;padding:20px;">暂无物品</div>';
+  var head = '<div style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:#F8FAFC;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-secondary);font-weight:600;">' +
+    '<span style="width:32px;flex-shrink:0;">序号</span>' +
+    '<span style="flex:1;">物品名称</span>' +
+    '<span style="flex:0.9;">快递单号</span>' +
+    '<span style="width:44px;text-align:center;">数量</span>' +
+    '<span style="width:44px;text-align:center;">属性</span>' +
+  '</div>';
+  openPdBoxDetail('物品明细', '箱号 ' + (b.no || '—') + ' · 共 ' + list.length + ' 项 / ' + qty + ' 件', '<div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;">' + head + rows + '</div>');
+}
+// 点「包裹数」→ 该箱的包裹明细弹框
+function showPdBoxParcels(oid, bi) {
+  var o = orderPackages.find(function(p){ return p.id === oid; });
+  if (!o) return;
+  var boxes = o.packDoneBoxes || o.packStartBoxes || [];
+  var b = boxes[bi];
+  if (!b) return;
+  // 按快递单号（express）分组，每组=一个包裹
+  var list = b.itemList || [];
+  var groups = [], map = {};
+  list.forEach(function(it){
+    var exp = it.express || '—';
+    if (!map[exp]) { map[exp] = { express: exp, items: 0 }; groups.push(map[exp]); }
+    map[exp].items++;
+  });
+  var rows = groups.map(function(g, i){
+    return '<div style="display:flex;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid #F3F4F6;font-size:12px;">' +
+      '<span style="width:32px;color:var(--text-secondary);flex-shrink:0;">' + (i + 1) + '</span>' +
+      '<span style="flex:1;min-width:0;color:var(--text);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + g.express + '</span>' +
+      '<span style="width:64px;text-align:center;color:var(--text);">' + g.items + '</span>' +
+    '</div>';
+  }).join('') || '<div style="text-align:center;color:var(--text-secondary);font-size:12px;padding:20px;">暂无包裹</div>';
+  var head = '<div style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:#F8FAFC;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-secondary);font-weight:600;">' +
+    '<span style="width:32px;flex-shrink:0;">序号</span>' +
+    '<span style="flex:1;">快递单号</span>' +
+    '<span style="width:64px;text-align:center;">物品数</span>' +
+  '</div>';
+  openPdBoxDetail('包裹明细', '箱号 ' + (b.no || '—') + ' · 共 ' + groups.length + ' 个包裹', '<div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;">' + head + rows + '</div>');
+}
+// 通用明细弹框
+function openPdBoxDetail(title, sub, bodyHtml) {
+  var el = document.getElementById('pdBoxDetailModal');
+  if (!el) return;
+  document.getElementById('pdBoxDetailTitle').textContent = title;
+  document.getElementById('pdBoxDetailSub').textContent = sub;
+  document.getElementById('pdBoxDetailBody').innerHTML = bodyHtml;
+  el.classList.add('show');
+}
+function closePdBoxDetail() {
+  var el = document.getElementById('pdBoxDetailModal');
+  if (el) el.classList.remove('show');
 }
 // 订单流转子 tab 切换：流程记录 / 分单记录 / 加货记录
 function switchPdFlowSubTab(sub, el) {
@@ -2957,6 +3478,8 @@ var spActive = 0;            // 当前激活tab索引
 var spIsGroup = false;       // 是否拼团多XY
 var startPackParcelState = []; // 开始打包：包裹列表 [{key,express,type,items,photos}]
 var PACK_START_TYPES = ['华侨包','超大件'];
+var downloadPhotos = [];       // 下载图片列表 [{name,url}]
+var downloadPhotoPicked = {};  // 下载勾选状态 { idx: true }
 
 function startOrderPack(id) {
   startPackId = id;
@@ -2994,6 +3517,63 @@ function startOrderPack(id) {
   document.getElementById('startPackModal').classList.add('show');
 }
 function hideStartPackModal() { document.getElementById('startPackModal').classList.remove('show'); startPackId = null; }
+
+// ===== 下载图片（收集所有已上传拆包图，全选/取消后下载） =====
+function openDownloadPhotos() {
+  var all = [];
+  startPackParcelState.forEach(function(p){
+    (p.photos||[]).forEach(function(ph){ all.push({ name: ph.name, url: ph.url }); });
+  });
+  if (!all.length) { alert('暂无已上传的拆包图片'); return; }
+  downloadPhotos = all;
+  downloadPhotoPicked = {};
+  all.forEach(function(_, i){ downloadPhotoPicked[i] = true; }); // 默认全选
+  renderDownloadPhotos();
+  document.getElementById('downloadPhotosModal').classList.add('show');
+}
+function renderDownloadPhotos() {
+  var grid = document.getElementById('downloadPhotoGrid');
+  if (!grid) return;
+  var total = downloadPhotos.length;
+  var picked = Object.keys(downloadPhotoPicked).filter(function(k){ return downloadPhotoPicked[k]; }).length;
+  var cntEl = document.getElementById('downloadPhotoCount');
+  if (cntEl) cntEl.textContent = '共 ' + total + ' 张 · 已选 ' + picked + ' 张';
+  var html = '';
+  downloadPhotos.forEach(function(ph, i){
+    var on = !!downloadPhotoPicked[i];
+    html += '<label onclick="toggleDownloadPhoto(' + i + ')" style="position:relative;margin:0;cursor:pointer;border:1px solid ' + (on ? '#1D4ED8' : 'var(--border)') + ';border-radius:6px;overflow:hidden;background:#F1F5F9;display:block;">' +
+      '<img src="' + ph.url + '" alt="" style="width:100%;height:80px;object-fit:cover;display:block;">' +
+      '<input type="checkbox" ' + (on ? 'checked' : '') + ' onclick="event.stopPropagation();toggleDownloadPhoto(' + i + ')" style="position:absolute;left:4px;top:4px;width:14px;height:14px;margin:0;padding:0;accent-color:#1D4ED8;cursor:pointer;">' +
+      '<span style="position:absolute;left:0;right:0;bottom:0;font-size:9px;color:#fff;background:rgba(0,0,0,.45);padding:1px 4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (ph.name || '') + '</span>' +
+      '</label>';
+  });
+  grid.innerHTML = html;
+  var allBtn = document.getElementById('downloadAllBtn');
+  if (allBtn) allBtn.textContent = (total && picked === total) ? '取消全选' : '全选';
+  var confBtn = document.getElementById('downloadConfirmBtn');
+  if (confBtn) confBtn.textContent = '下载 ' + picked + ' 张';
+}
+function toggleDownloadPhoto(i) {
+  if (downloadPhotoPicked[i]) delete downloadPhotoPicked[i];
+  else downloadPhotoPicked[i] = true;
+  renderDownloadPhotos();
+}
+function toggleDownloadAll() {
+  var all = downloadPhotos.length && Object.keys(downloadPhotoPicked).length === downloadPhotos.length;
+  downloadPhotoPicked = {};
+  if (!all) downloadPhotos.forEach(function(_, i){ downloadPhotoPicked[i] = true; });
+  renderDownloadPhotos();
+}
+function closeDownloadPhotos() {
+  var m = document.getElementById('downloadPhotosModal');
+  if (m) m.classList.remove('show');
+}
+function confirmDownloadPhotos() {
+  var picked = Object.keys(downloadPhotoPicked).filter(function(k){ return downloadPhotoPicked[k]; }).length;
+  if (!picked) { alert('请选择要下载的图片'); return; }
+  closeDownloadPhotos();
+  showToast('已开始下载 ' + picked + ' 张图片');
+}
 
 // ===== 扫描包裹面单（读取单号填入指定筛选框） =====
 var waybillScanTimer = null;
@@ -3360,8 +3940,13 @@ function triggerStartPackAi() {
 function renderStartPackAiList() {
   var list = document.getElementById('startPackAiModalList');
   if (!list) return;
-  var _cat = currentStartPackAiCat || '华侨包';
-  var _items = startPackAiItems.filter(function(it){ return (it.pkgCat||'华侨包')===_cat; });
+  var fCat = startPackAiFilterCat();
+  var fAttr = startPackAiFilterAttr();
+  var _items = startPackAiItems.filter(function(it){
+    if (fCat !== '全部' && (it.pkgCat || '华侨包') !== fCat) return false;
+    if (fAttr !== '全部' && (it.cat || '普货') !== fAttr) return false;
+    return true;
+  });
   // 按photo分组
   function _g(arr) {
     var g={}, ord=[];
@@ -3375,44 +3960,47 @@ function renderStartPackAiList() {
   var group = _g(_items);
   var h = '';
   if (!_items.length) {
-    h = '<div style="text-align:center;color:var(--text-secondary);font-size:12px;padding:24px 0;">暂无'+_cat+'物品</div>';
+    h = '<div style="text-align:center;color:var(--text-secondary);font-size:12px;padding:28px 0;border:1px dashed var(--border);border-radius:8px;">暂无匹配物品</div>';
   }
   group.order.forEach(function(photoName, pi){
     var pItems = group.groups[photoName];
-    h += '<div class="sp-group" style="margin-bottom:10px;">';
-    // 分组头部
-    h += '<div class="sp-group-header" style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#F8FAFC;border-radius:10px;border:1px solid #E5E7EB;cursor:pointer;">';
-    h += camThumb();
-    h += '<div style="flex:1;min-width:0;">';
-    h += '<div style="font-size:13px;font-weight:600;color:var(--text);">'+photoName+'</div>';
-    h += '<div style="font-size:11px;color:var(--text-secondary);">识别 '+pItems.length+' 个物品</div>';
-    h += '</div>';
-    h += '<div style="display:flex;align-items:center;gap:4px;">';
-    h += pkgCatTagHtml(_cat);
-    h += '<button onclick="event.stopPropagation();spChangePhoto(\''+photoName+'\')" title="更换图片" style="padding:5px;border:1px solid var(--border);border-radius:6px;background:var(--card);cursor:pointer;display:inline-flex;align-items:center;color:var(--primary);flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:block;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>';
-    h += '<button onclick="event.stopPropagation();reRecognizePhoto(\''+photoName+'\')" title="重新识别" style="padding:5px;border:1px solid var(--border);border-radius:6px;background:var(--card);cursor:pointer;display:inline-flex;align-items:center;color:var(--primary);flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:block;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/><path d="M19 3l-2 3h3l-2 3"/></svg></button>';
+    var gCat = (pItems[0].pkgCat || '华侨包');
+    var isBig = gCat === '超大件';
+    h += '<div class="sp-group" style="margin-bottom:10px;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--card);">';
+    // 分组头部：图片 + 包裹单号 + 分类标签(N项) + 重新识别 + 新增 + 折叠
+    h += '<div class="sp-group-header" style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:#F8FAFC;cursor:pointer;">';
+    h += '<span style="flex-shrink:0;display:inline-flex;color:#16A34A;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>';
+    h += '<span style="font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+h5ImgGroupName(photoName)+'</span>';
+    h += '<span style="flex-shrink:0;font-size:10px;font-weight:600;padding:1px 8px;border-radius:10px;border:1px solid;'+(isBig?'background:#FFF7ED;color:#EA580C;border-color:#FED7AA;':'background:#ECFDF5;color:#166534;border-color:#BBF7D0;')+'">'+gCat+pItems.length+'项</span>';
+    h += '<span style="margin-left:auto;display:flex;align-items:center;gap:4px;flex-shrink:0;">';
+    h += '<button onclick="event.stopPropagation();reRecognizePhoto(\''+photoName+'\')" title="重新识别" style="padding:4px;border:1px solid var(--border);border-radius:6px;background:var(--card);cursor:pointer;display:inline-flex;align-items:center;color:#16A34A;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>';
+    h += '<button onclick="event.stopPropagation();spItemAdd(\''+photoName+'\',\''+gCat+'\')" title="新增物品" style="padding:4px;border:1px solid var(--border);border-radius:6px;background:var(--card);cursor:pointer;display:inline-flex;align-items:center;color:#16A34A;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>';
     h += '<span class="sp-chevron" style="font-size:12px;color:var(--text-secondary);">▾</span>';
-    h += '</div></div>';
-    // 表格（可编辑）
-    h += '<div class="sp-group-body" style="padding:4px 0 0 0;">';
-    h += '<div style="display:flex;padding:8px 12px 4px;font-size:11px;color:var(--text-secondary);">';
-    h += '<div style="flex:1;min-width:0;">物品</div>';
-    h += '<div style="width:70px;text-align:right;">属性</div>';
-    h += '<div style="width:28px;"></div>';
+    h += '</span></div>';
+    // 表格：物品名称 / 品牌 / 数量 / 属性 / 操作
+    h += '<div class="sp-group-body">';
+    h += '<div style="display:flex;align-items:center;gap:4px;padding:6px 10px;background:#FCFDFE;border-bottom:1px solid var(--border);font-size:10px;color:var(--text-secondary);">';
+    h += '<span style="flex:1.3;min-width:0;">物品名称</span>';
+    h += '<span style="flex:1;min-width:0;">品牌</span>';
+    h += '<span style="width:30px;text-align:center;">数量</span>';
+    h += '<span style="width:50px;text-align:center;">属性</span>';
+    h += '<span style="width:30px;text-align:center;">操作</span>';
     h += '</div>';
     pItems.forEach(function(item){
       var idx = startPackAiItems.indexOf(item);
-      h += '<div style="display:flex;align-items:center;gap:6px;padding:7px 12px;border-top:1px solid #F3F4F6;">';
-      h += '<input type="text" value="'+item.name+'" onchange="spItemRename('+idx+', this.value)" style="flex:1;min-width:0;padding:5px 8px;border:1px solid var(--border);border-radius:4px;font-size:13px;outline:none;background:var(--card);color:var(--text);">';
-      h += '<select onchange="spItemRecat('+idx+', this.value)" style="width:70px;padding:5px 4px;border:1px solid var(--border);border-radius:4px;font-size:11px;outline:none;background:var(--card);color:var(--text);">';
-      h += '<option value="普货"'+(item.cat==='普货'?' selected':'')+'>普货</option>';
-      h += '<option value="敏货"'+(item.cat==='敏货'?' selected':'')+'>敏货</option></select>';
-      h += '<button onclick="spItemDelete('+idx+')" title="删除" style="width:28px;padding:5px 0;border:none;background:none;color:#DC2626;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button>';
+      var attrBg = item.cat==='敏货'?'#FEF2F2':(item.cat==='禁运'?'#F3F4F6':'#ECFDF5');
+      var attrFg = item.cat==='敏货'?'#DC2626':(item.cat==='禁运'?'#6B7280':'#15803D');
+      var attrBd = item.cat==='敏货'?'#FECACA':(item.cat==='禁运'?'#E5E7EB':'#BBF7D0');
+      h += '<div style="display:flex;align-items:center;gap:4px;padding:6px 10px;border-bottom:1px solid #F3F4F6;font-size:12px;">';
+      h += '<span style="flex:1.3;min-width:0;"><input type="text" value="'+(item.name||'')+'" onchange="spItemRename('+idx+',this.value)" onfocus="this.style.borderColor=\'var(--border)\';this.style.background=\'#fff\'" onblur="this.style.borderColor=\'transparent\';this.style.background=\'transparent\'" style="width:100%;padding:2px 4px;border:1px solid transparent;border-radius:4px;font-size:12px;outline:none;background:transparent;color:var(--text);box-sizing:border-box;"></span>';
+      h += '<span style="flex:1;min-width:0;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;">'+(item.brand||packItemBrand(item.name))+'</span>';
+      h += '<span style="width:30px;text-align:center;color:var(--text);">'+(item.qty||1)+'</span>';
+      h += '<span style="width:50px;text-align:center;"><select onchange="spItemRecat('+idx+',this.value)" style="padding:1px 2px;border:1px solid '+attrBd+';border-radius:8px;font-size:10px;font-weight:600;outline:none;background:'+attrBg+';color:'+attrFg+';cursor:pointer;">';
+      ['普货','敏货','禁运'].forEach(function(c){ h += '<option value="'+c+'"'+(item.cat===c?' selected':'')+'>'+c+'</option>'; });
+      h += '</select></span>';
+      h += '<span style="width:30px;text-align:center;"><button onclick="spItemDelete('+idx+')" title="删除" style="width:22px;height:22px;border:none;border-radius:50%;background:#DC2626;color:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></span>';
       h += '</div>';
     });
-    h += '<div style="padding:6px 12px 2px;">';
-    h += '<button onclick="spItemAdd(\''+photoName+'\',\''+_cat+'\')" style="width:100%;padding:6px 0;border:1px dashed var(--border);border-radius:6px;background:transparent;font-size:12px;color:var(--text-secondary);cursor:pointer;">+ 新增物品</button>';
-    h += '</div>';
     h += '</div>';
     h += '</div>';
   });
@@ -3448,22 +4036,46 @@ function pkgCatTagHtml(cat) {
   return '<span style="display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600;background:'+bg+';color:'+fg+';">'+cat+'</span>';
 }
 function renderStartPackAiModal() {
-  var _o = orderPackages.find(function(p){ return p.id===startPackId; });
-  document.getElementById('startPackAiModalCode').textContent = '海鸥订单号：'+(_o?_o.xy:'');
-  // 分类 tab
-  var cats = ['华侨包','超大件'];
-  var tabHtml = '';
-  cats.forEach(function(c){
-    var cnt = startPackAiItems.filter(function(it){ return (it.pkgCat||'华侨包')===c; }).length;
-    tabHtml += '<div style="flex:1;text-align:center;padding:8px 0;font-size:13px;border-radius:8px;cursor:pointer;'+
-      (currentStartPackAiCat===c?'background:var(--primary);color:#fff;font-weight:600;':'background:#F3F4F6;color:var(--text-secondary);')+
-      '" onclick="switchStartPackAiCat(\''+c+'\')">'+c+' '+cnt+'件</div>';
+  // 统计：普货 / 敏货 / 禁运 / 仿牌
+  var gen = 0, sen = 0, ban = 0, fake = 0;
+  startPackAiItems.forEach(function(it){
+    if (it.cat === '敏货') sen++;
+    else if (it.cat === '禁运') ban++;
+    else gen++;
+    if (it.counterfeit) fake++;
   });
-  document.getElementById('startPackAiCatTabs').innerHTML = tabHtml;
-  // 提示：可直接在图片组内编辑
-  document.getElementById('startPackAiToolbar').innerHTML =
-    '<div style="font-size:11px;color:var(--text-secondary);">点击图片组展开，可直接修改、新增、删除物品；确认打包即保存</div>';
+  var statEl = document.getElementById('startPackAiStat');
+  if (statEl) {
+    statEl.innerHTML = '普货 <b style="color:#15803D;">' + gen + '</b> · 敏货 <b style="color:#DC2626;">' + sen + '</b> · 禁运 <b style="color:#6B7280;">' + ban + '</b> · 仿牌 <b style="color:#EA580C;">' + fake + '</b>';
+  }
   renderStartPackAiList();
+}
+// 筛选：包裹类别 / 物品属性
+function startPackAiFilterCat() {
+  var el = document.getElementById('startPackAiFilterCat');
+  return el ? el.value : '全部';
+}
+function startPackAiFilterAttr() {
+  var el = document.getElementById('startPackAiFilterAttr');
+  return el ? el.value : '全部';
+}
+function onStartPackAiFilter() {
+  renderStartPackAiList();
+}
+// 演示品牌映射
+var PACK_BRAND_MAP = {
+  '棉质T恤':'阿迪达斯','书籍杂志':'保罗','充电宝':'彪马','陶瓷餐具':'保罗','香水':'香奈儿',
+  '运动短裤':'耐克','运动鞋':'耐克','折叠床':'无品牌','跑步机':'舒华','办公室椅':'宜家',
+  '数据线':'绿联','无线耳机':'索尼','蓝牙音箱':'JBL','保温杯':'膳魔师','水杯':'乐扣',
+  '牛仔裤':'李维斯','衬衫':'优衣库','连衣裙':'ZARA','毛衣':'太平鸟','卫衣':'耐克'
+};
+function packItemBrand(name) { return PACK_BRAND_MAP[name] || '无品牌'; }
+// 分单（原型模拟）
+function splitStartPackOrder() {
+  var o = orderPackages.find(function(p){ return p.id === startPackId; });
+  if (!o) return;
+  if (!startPackAiItems.length) { alert('当前没有可拆分的物品'); return; }
+  showToast('已提交分单申请：' + orderDisplayXy(o) + ' · ' + startPackAiItems.length + ' 项物品');
 }
 function spItemRename(idx, val) {
   var it = startPackAiItems[idx];
@@ -4938,6 +5550,18 @@ renderCurrentPage();
 </script>
 
 <!-- ====== AI识别修改弹窗 ====== -->
+<div class="modal-overlay" id="pdBoxDetailModal">
+  <div class="modal" style="max-height:80vh;overflow-y:auto;">
+    <span class="modal-close" onclick="closePdBoxDetail()" title="关闭"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+    <h3 id="pdBoxDetailTitle">明细</h3>
+    <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;" id="pdBoxDetailSub"></div>
+    <div id="pdBoxDetailBody"></div>
+    <div class="btn-row" style="margin-top:12px;">
+      <button class="btn" onclick="closePdBoxDetail()" style="flex:1;">关闭</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="pdEditModal">
   <div class="modal-full" style="height:90dvh;max-height:90dvh;padding-bottom:20px;overflow-y:auto;">
     <span class="modal-close" onclick="document.getElementById('pdEditModal').classList.remove('show')" title="关闭"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
